@@ -1,0 +1,56 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="row min-vh-100 align-items-center justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-lg border-0 rounded-lg">
+            <div class="row g-0">
+                <!-- Left Side with Brand Details -->
+                <div class="col-md-6 bg-primary text-white p-5 d-flex flex-column justify-content-center align-items-center rounded-start text-center">
+                    <h2 class="fw-bold mb-3">RealEstate Management System</h2>
+                    <p class="fs-5">Find. Buy. Rent. Manage.</p>
+                </div>
+                
+                <!-- Right Side strictly for Login -->
+                <div class="col-md-6 p-5">
+                    <h3 class="mb-4">Welcome Back</h3>
+                    <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                            <label asp-for="Email">Email address</label>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Password" class="form-control" placeholder="Password" />
+                            <label asp-for="Password">Password</label>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label"></label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4 text-center">
+                        <p class="mb-1"><a asp-action="ForgotPassword" class="text-decoration-none">Forgot Password?</a></p>
+                        <p class="mb-0">Don't have an account? <a asp-action="Register" class="text-decoration-none fw-bold">Register here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
