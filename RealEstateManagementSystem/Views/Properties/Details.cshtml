@@ -1,0 +1,132 @@
+@model PropertyDetailsViewModel
+@{
+    ViewData["Title"] = Model.Property.Title;
+    var property = Model.Property;
+    var images = property.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.PropertyImageId).ToList();
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Properties</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@property.Title</li>
+    </ol>
+</nav>
+
+<partial name="_StatusMessages" />
+
+@if (Model.IsRestrictedListing)
+{
+    <div class="alert alert-warning">
+        This listing is not visible to the public because its status is <strong>@property.Status</strong>.
+        @if (property.Status == PropertyStatus.Rejected && !string.IsNullOrWhiteSpace(property.RejectionReason))
+        {
+            <div class="mt-1"><strong>Reason:</strong> @property.RejectionReason</div>
+        }
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        @if (images.Count > 0)
+        {
+            <div id="propertyImages" class="carousel slide shadow-sm" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    @for (var index = 0; index < images.Count; index++)
+                    {
+                        <div class="carousel-item @(index == 0 ? "active" : string.Empty)">
+                            <img src="@images[index].ImageUrl" class="d-block w-100" alt="@property.Title"
+                                 style="height: 420px; object-fit: cover;" />
+                        </div>
+                    }
+                </div>
+
+                @if (images.Count > 1)
+                {
+                    <button class="carousel-control-prev" type="button" data-bs-target="#propertyImages" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#propertyImages" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="bg-light d-flex align-items-center justify-content-center text-muted shadow-sm"
+                 style="height: 420px;">
+                No images uploaded for this property
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h1 class="h4 mb-1">@property.Title</h1>
+                    <partial name="_PropertyStatusBadge" model="property.Status" />
+                </div>
+                <p class="text-muted mb-3">@property.PropertyType?.Name &middot; @property.Location?.DisplayName</p>
+
+                <p class="fs-3 fw-bold text-primary mb-1">
+                    &#8377;@property.Price.ToString("N0")
+                    <span class="badge bg-secondary align-middle">
+                        @(property.ListingType == ListingType.Sale ? "For Sale" : "For Rent")
+                    </span>
+                </p>
+
+                <dl class="row small mb-3">
+                    <dt class="col-6">Area</dt>
+                    <dd class="col-6 text-end">@property.Area.ToString("N0") sq.ft.</dd>
+
+                    <dt class="col-6">Bedrooms</dt>
+                    <dd class="col-6 text-end">@property.Bedrooms</dd>
+
+                    <dt class="col-6">Bathrooms</dt>
+                    <dd class="col-6 text-end">@property.Bathrooms</dd>
+
+                    <dt class="col-6">Property Type</dt>
+                    <dd class="col-6 text-end">@property.PropertyType?.Name</dd>
+
+                    <dt class="col-6">Listed By</dt>
+                    <dd class="col-6 text-end">@Model.OwnerName</dd>
+
+                    <dt class="col-6">Posted On</dt>
+                    <dd class="col-6 text-end">@property.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</dd>
+
+                    @if (property.UpdatedAt.HasValue)
+                    {
+                        <dt class="col-6">Last Updated</dt>
+                        <dd class="col-6 text-end">@property.UpdatedAt.Value.ToLocalTime().ToString("dd MMM yyyy")</dd>
+                    }
+                </dl>
+
+                <h2 class="h6">Address</h2>
+                <p class="mb-3">@property.Address</p>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    @if (Model.CanManage)
+                    {
+                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@property.PropertyId">Edit</a>
+                        <a class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@property.PropertyId">Delete</a>
+                        <a class="btn btn-outline-secondary btn-sm" asp-action="MyProperties">My Properties</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Back to Properties</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+        <h2 class="h5">Description</h2>
+        <p class="mb-0" style="white-space: pre-line;">@property.Description</p>
+    </div>
+</div>

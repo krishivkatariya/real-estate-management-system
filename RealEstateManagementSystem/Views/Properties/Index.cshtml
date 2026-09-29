@@ -1,0 +1,77 @@
+@model IEnumerable<Property>
+@{
+    ViewData["Title"] = "Properties";
+    var properties = Model.ToList();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Available Properties</h1>
+    @if (User.Identity?.IsAuthenticated == true && !User.IsInRole("Admin"))
+    {
+        <a class="btn btn-primary" asp-controller="Properties" asp-action="Create">+ Add Property</a>
+    }
+</div>
+
+<partial name="_StatusMessages" />
+
+@if (properties.Count == 0)
+{
+    <div class="alert alert-info">
+        No approved properties are available right now.
+        @if (User.Identity?.IsAuthenticated == true && !User.IsInRole("Admin"))
+        {
+            <span>You can <a asp-action="Create">add your own property</a>.</span>
+        }
+    </div>
+}
+else
+{
+    <p class="text-muted">@properties.Count approved listing(s).</p>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var property in properties)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    @if (property.PrimaryImage != null)
+                    {
+                        <img src="@property.PrimaryImage.ImageUrl" class="card-img-top" alt="@property.Title"
+                             style="height: 200px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center text-muted"
+                             style="height: 200px;">
+                            No image
+                        </div>
+                    }
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@property.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            @(property.PropertyType?.Name) &middot; @(property.Location?.DisplayName)
+                        </h6>
+                        <p class="card-text small">
+                            @(property.Description.Length > 120
+                                ? property.Description.Substring(0, 120) + "..."
+                                : property.Description)
+                        </p>
+                        <p class="mb-2 small text-muted">
+                            @property.Area.ToString("N0") sq.ft. &middot; @property.Bedrooms Bed &middot; @property.Bathrooms Bath
+                        </p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">
+                                &#8377;@property.Price.ToString("N0")
+                                <span class="badge bg-secondary">
+                                    @(property.ListingType == ListingType.Sale ? "For Sale" : "For Rent")
+                                </span>
+                            </span>
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@property.PropertyId">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

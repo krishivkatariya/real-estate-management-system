@@ -1,0 +1,56 @@
+@model LocationFormViewModel
+@{
+    ViewData["Title"] = "Add Location";
+}
+
+<h1 class="h3 mb-3">Add Location</h1>
+
+<partial name="_StatusMessages" />
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="City" class="form-label"></label>
+                    <input asp-for="City" class="form-control" placeholder="Bengaluru" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="State" class="form-label"></label>
+                    <input asp-for="State" class="form-control" placeholder="Karnataka" />
+                    <span asp-validation-for="State" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Country" class="form-label"></label>
+                    <input asp-for="Country" class="form-control" />
+                    <span asp-validation-for="Country" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Pincode" class="form-label"></label>
+                    <input asp-for="Pincode" class="form-control" placeholder="560001" />
+                    <span asp-validation-for="Pincode" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-check mt-3 mb-3">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label asp-for="IsActive" class="form-check-label"></label>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

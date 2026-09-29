@@ -1,0 +1,65 @@
+@model Property
+@{
+    ViewData["Title"] = "Delete Property";
+}
+
+<h1 class="h3 mb-3 text-danger">Delete Property</h1>
+
+<partial name="_StatusMessages" />
+
+<div class="alert alert-danger">
+    This action permanently removes the listing and its uploaded images. This cannot be undone.
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                @if (Model.PrimaryImage != null)
+                {
+                    <img src="@Model.PrimaryImage.ImageUrl" alt="@Model.Title" class="img-fluid rounded shadow-sm" />
+                }
+                else
+                {
+                    <div class="bg-light d-flex align-items-center justify-content-center text-muted rounded"
+                         style="height: 200px;">
+                        No image
+                    </div>
+                }
+            </div>
+            <div class="col-md-8">
+                <h2 class="h5">@Model.Title</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8"><partial name="_PropertyStatusBadge" model="Model.Status" /></dd>
+
+                    <dt class="col-sm-4">Property Type</dt>
+                    <dd class="col-sm-8">@Model.PropertyType?.Name</dd>
+
+                    <dt class="col-sm-4">Location</dt>
+                    <dd class="col-sm-8">@Model.Location?.DisplayName</dd>
+
+                    <dt class="col-sm-4">Price</dt>
+                    <dd class="col-sm-8">
+                        &#8377;@Model.Price.ToString("N0")
+                        (@(Model.ListingType == ListingType.Sale ? "For Sale" : "For Rent"))
+                    </dd>
+
+                    <dt class="col-sm-4">Address</dt>
+                    <dd class="col-sm-8">@Model.Address</dd>
+
+                    <dt class="col-sm-4">Images</dt>
+                    <dd class="col-sm-8">@Model.Images.Count</dd>
+                </dl>
+            </div>
+        </div>
+
+        <form asp-action="Delete" asp-route-id="@Model.PropertyId" method="post" class="mt-4">
+            @Html.AntiForgeryToken()
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">Yes, delete this property</button>
+                <a class="btn btn-outline-secondary" asp-action="MyProperties">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

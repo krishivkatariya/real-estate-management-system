@@ -4,6 +4,8 @@ using RealEstateManagementSystem.Data;
 using RealEstateManagementSystem.Models;
 using RealEstateManagementSystem.Repositories.Implementations;
 using RealEstateManagementSystem.Repositories.Interfaces;
+using RealEstateManagementSystem.Services;
+using RealEstateManagementSystem.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +52,12 @@ builder.Services.ConfigureApplicationCookie(options =>
 // Configure Custom Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+// Phase 2 - Property Management repositories and services
+builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+builder.Services.AddScoped<IPropertyTypeRepository, PropertyTypeRepository>();
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IPropertyImageStorage, PropertyImageStorage>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -90,6 +98,13 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Friendly public URL for the property listing: /Properties resolves to PropertiesController.Index
+// (the default route below defaults the action to Login, so /Properties alone would not match).
+app.MapControllerRoute(
+    name: "properties",
+    pattern: "Properties/{action=Index}/{id?}",
+    defaults: new { controller = "Properties" });
 
 app.MapControllerRoute(
     name: "default",

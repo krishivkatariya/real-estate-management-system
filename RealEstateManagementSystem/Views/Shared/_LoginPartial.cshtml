@@ -7,46 +7,29 @@
     var user = await UserManager.GetUserAsync(User);
 }
 
+@* Only links to features that really exist are shown: no dead "#" navigation. *@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
     @if (User.IsInRole("Admin"))
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Dashboard</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="AdminProperties" asp-action="Index">Manage Properties</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Users</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="AdminPropertyTypes" asp-action="Index">Property Types</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Properties</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Transactions</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Categories</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Locations</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="AdminLocations" asp-action="Index">Locations</a>
         </li>
     }
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Properties</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Properties" asp-action="MyProperties">My Properties</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Favorites</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" href="#">My Transactions</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" href="#">My Properties</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Profile</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Properties" asp-action="Create">Add Property</a>
         </li>
     }
 

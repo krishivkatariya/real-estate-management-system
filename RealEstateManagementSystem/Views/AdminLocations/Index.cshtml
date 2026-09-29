@@ -1,0 +1,75 @@
+@model IEnumerable<LocationListItemViewModel>
+@{
+    ViewData["Title"] = "Locations";
+    var items = Model.ToList();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Locations</h1>
+    <a class="btn btn-primary" asp-action="Create">+ Add Location</a>
+</div>
+
+<partial name="_StatusMessages" />
+
+<div class="alert alert-info">
+    Locations are never deleted because existing listings use them. Deactivate a location instead - it
+    disappears from the property form but old listings keep working.
+</div>
+
+@if (items.Count == 0)
+{
+    <div class="alert alert-warning">No location has been created yet.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">City</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Pincode</th>
+                    <th scope="col" class="text-end">Listings</th>
+                    <th scope="col">State</th>
+                    <th scope="col" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in items)
+                {
+                    <tr>
+                        <td class="fw-semibold">@item.Location.City</td>
+                        <td>@item.Location.State</td>
+                        <td>@item.Location.Country</td>
+                        <td>@item.Location.Pincode</td>
+                        <td class="text-end">@item.PropertyCount</td>
+                        <td>
+                            @if (item.Location.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Edit"
+                               asp-route-id="@item.Location.LocationId">Edit</a>
+
+                            <form asp-action="ToggleActive" asp-route-id="@item.Location.LocationId"
+                                  method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit"
+                                        class="btn btn-sm @(item.Location.IsActive ? "btn-outline-warning" : "btn-outline-success")">
+                                    @(item.Location.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

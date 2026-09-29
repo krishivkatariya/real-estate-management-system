@@ -1,0 +1,17 @@
+@* Single place that decides how a PropertyStatus is displayed as a coloured badge. *@
+@model PropertyStatus
+
+@{
+    var cssClass = Model switch
+    {
+        PropertyStatus.Pending => "bg-warning text-dark",
+        PropertyStatus.Approved => "bg-success",
+        PropertyStatus.Rejected => "bg-danger",
+        PropertyStatus.Sold => "bg-secondary",
+        PropertyStatus.Rented => "bg-info text-dark",
+        PropertyStatus.Inactive => "bg-dark",
+        _ => "bg-secondary"
+    };
+}
+
+<span class="badge @cssClass">@Model</span>

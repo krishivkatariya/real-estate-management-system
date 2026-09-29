@@ -1,0 +1,39 @@
+@model PropertyRejectViewModel
+@{
+    ViewData["Title"] = "Reject Property";
+}
+
+<h1 class="h3 mb-3 text-warning">Reject Property</h1>
+
+<partial name="_StatusMessages" />
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <p class="mb-3">
+            You are rejecting the listing <strong>@Model.Title</strong>. The owner will see your reason on
+            <em>My Properties</em> and can edit the listing and resubmit it for approval.
+        </p>
+
+        <form asp-action="Reject" asp-route-id="@Model.PropertyId" method="post">
+            <input type="hidden" asp-for="PropertyId" />
+            <input type="hidden" asp-for="Title" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="RejectionReason" class="form-label"></label>
+                <textarea asp-for="RejectionReason" class="form-control" rows="4"
+                          placeholder="Example: the price looks unrealistic and the description is too short."></textarea>
+                <span asp-validation-for="RejectionReason" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-warning">Reject Listing</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
