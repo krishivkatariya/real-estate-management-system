@@ -19,6 +19,9 @@ public class Property
     public int Bedrooms { get; set; }
     public int Bathrooms { get; set; }
 
+    [Range(0, double.MaxValue)]
+    public decimal Area { get; set; }
+
     [StringLength(300)]
     public string? Address { get; set; }
 
@@ -34,9 +37,16 @@ public class Property
     public PropertyType PropertyType { get; set; } = PropertyType.Other;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+
+    public PropertyStatus Status { get; set; } = PropertyStatus.Available;
 
     public int? AgentId { get; set; }
     public Agent? Agent { get; set; }
+
+    // Owner (ApplicationUser) - optional
+    public string? OwnerId { get; set; }
+    public ApplicationUser? Owner { get; set; }
 
     public ICollection<PropertyImage> Images { get; set; } = new List<PropertyImage>();
 }

@@ -1,0 +1,70 @@
+@model realEstate.Models.Property
+
+@{
+    ViewData["Title"] = "Create Property";
+}
+
+<h2>Create Property</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="Bedrooms" class="form-label"></label>
+            <input asp-for="Bedrooms" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Bathrooms" class="form-label"></label>
+            <input asp-for="Bathrooms" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Area" class="form-label"></label>
+            <input asp-for="Area" class="form-control" />
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="City" class="form-label"></label>
+            <input asp-for="City" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="State" class="form-label"></label>
+            <input asp-for="State" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="ZipCode" class="form-label"></label>
+            <input asp-for="ZipCode" class="form-control" />
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="PropertyType" class="form-label"></label>
+        <select asp-for="PropertyType" class="form-select" asp-items="Html.GetEnumSelectList<realEstate.Models.PropertyType>()"></select>
+    </div>
+    <div class="mb-3">
+        <label>Images</label>
+        <input type="file" name="images" multiple class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

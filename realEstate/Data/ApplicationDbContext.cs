@@ -21,10 +21,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Property>(entity =>
         {
             entity.HasKey(p => p.Id);
+            entity.Property(p => p.Price).HasPrecision(18, 2);
+            entity.Property(p => p.Area).HasColumnType("decimal(10,2)");
             entity.HasMany(p => p.Images)
                   .WithOne(i => i.Property)
                   .HasForeignKey(i => i.PropertyId)
                   .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(p => p.Owner)
+                  .WithMany()
+                  .HasForeignKey(p => p.OwnerId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<PropertyImage>(entity =>

@@ -37,6 +37,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // Register repositories
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+// Image service
+builder.Services.AddScoped<realEstate.Services.IImageService, realEstate.Services.FileImageService>();
 
 var app = builder.Build();
 
