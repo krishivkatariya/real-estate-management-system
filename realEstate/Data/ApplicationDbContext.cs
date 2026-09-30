@@ -1,0 +1,39 @@
+using Microsoft.EntityFrameworkCore;
+using realEstate.Models;
+
+namespace realEstate.Data;
+
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<Property> Properties { get; set; } = null!;
+    public DbSet<PropertyImage> PropertyImages { get; set; } = null!;
+    public DbSet<Agent> Agents { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Property>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.HasMany(p => p.Images)
+                  .WithOne(i => i.Property)
+                  .HasForeignKey(i => i.PropertyId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PropertyImage>(entity =>
+        {
+            entity.HasKey(i => i.Id);
+        });
+
+        modelBuilder.Entity<Agent>(entity =>
+        {
+            entity.HasKey(a => a.Id);
+        });
+    }
+}
