@@ -13,6 +13,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Property> Properties { get; set; } = null!;
     public DbSet<PropertyImage> PropertyImages { get; set; } = null!;
     public DbSet<Agent> Agents { get; set; } = null!;
+    public DbSet<Favorite> Favorites { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +42,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Agent>(entity =>
         {
             entity.HasKey(a => a.Id);
+        });
+
+        modelBuilder.Entity<Favorite>(entity =>
+        {
+            entity.HasKey(f => f.Id);
+            entity.HasIndex(f => new { f.UserId, f.PropertyId }).IsUnique();
+            entity.HasOne(f => f.User).WithMany().HasForeignKey(f => f.UserId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(f => f.Property).WithMany().HasForeignKey(f => f.PropertyId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

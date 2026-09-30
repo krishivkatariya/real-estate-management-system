@@ -15,13 +15,15 @@ public class PropertyController : Controller
     private readonly ApplicationDbContext _db;
     private readonly IImageService _imageService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IFavoriteRepository _favoriteRepo;
 
-    public PropertyController(IPropertyRepository repo, ApplicationDbContext db, IImageService imageService, UserManager<ApplicationUser> userManager)
+    public PropertyController(IPropertyRepository repo, ApplicationDbContext db, IImageService imageService, UserManager<ApplicationUser> userManager, IFavoriteRepository favoriteRepo)
     {
         _repo = repo;
         _db = db;
         _imageService = imageService;
         _userManager = userManager;
+        _favoriteRepo = favoriteRepo;
     }
 
     // Public listing with search, filters, sort and pagination
@@ -123,6 +125,16 @@ public class PropertyController : Controller
             Status = status,
             Sort = sort
         };
+
+        // include favorites for current user
+        if (User?.Identity?.IsAuthenticated ?? false)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                vm.FavoritedPropertyIds = await _favoriteRepo.GetFavoritePropertyIdsForUserAsync(user.Id);
+            }
+        }
 
         return View(vm);
     }

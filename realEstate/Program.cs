@@ -39,6 +39,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 // Image service
 builder.Services.AddScoped<realEstate.Services.IImageService, realEstate.Services.FileImageService>();
+// Favorites
+builder.Services.AddScoped<realEstate.Repositories.IFavoriteRepository, realEstate.Repositories.FavoriteRepository>();
 
 var app = builder.Build();
 

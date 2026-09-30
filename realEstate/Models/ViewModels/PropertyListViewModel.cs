@@ -20,4 +20,5 @@ public class PropertyListViewModel
     public int? Bathrooms { get; set; }
     public realEstate.Models.PropertyStatus? Status { get; set; }
     public string? Sort { get; set; }
+    public IEnumerable<int> FavoritedPropertyIds { get; set; } = Enumerable.Empty<int>();
 }

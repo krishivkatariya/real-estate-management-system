@@ -69,6 +69,41 @@
                 <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
                 <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
             }
+
+            // favorite control
+            var userFav = false;
+            try
+            {
+                // safe: call repository via HttpContext.RequestServices
+                var favRepo = Context.RequestServices.GetService(typeof(realEstate.Repositories.IFavoriteRepository)) as realEstate.Repositories.IFavoriteRepository;
+                var userManager = Context.RequestServices.GetService(typeof(Microsoft.AspNetCore.Identity.UserManager<realEstate.Models.ApplicationUser>)) as Microsoft.AspNetCore.Identity.UserManager<realEstate.Models.ApplicationUser>;
+                var currentUser = userManager?.GetUserAsync(User).GetAwaiter().GetResult();
+                if (favRepo != null && currentUser != null)
+                {
+                    userFav = favRepo.IsFavoritedAsync(currentUser.Id, Model.Id).GetAwaiter().GetResult();
+                }
+            }
+            catch
+            {
+                userFav = false;
+            }
+
+            if (userFav)
+            {
+                <form asp-controller="Favorites" asp-action="Remove" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="propertyId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger">Remove Favorite ♥</button>
+                </form>
+            }
+            else
+            {
+                <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="propertyId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger">Add to Favorites ♡</button>
+                </form>
+            }
         }
     </div>
 </div>
