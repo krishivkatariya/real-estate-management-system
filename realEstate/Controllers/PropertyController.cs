@@ -24,11 +24,107 @@ public class PropertyController : Controller
         _userManager = userManager;
     }
 
-    // Public listing
-    public async Task<IActionResult> Index()
+    // Public listing with search, filters, sort and pagination
+    public async Task<IActionResult> Index(
+        string? search,
+        string? city,
+        realEstate.Models.PropertyType? propertyType,
+        decimal? minPrice,
+        decimal? maxPrice,
+        int? bedrooms,
+        int? bathrooms,
+        realEstate.Models.PropertyStatus? status,
+        string? sort,
+        int page = 1)
     {
-        var properties = await _repo.GetAllAsync();
-        return View(properties);
+        const int pageSize = 6;
+
+        var query = _repo.Query();
+
+        // Keyword search
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var kw = search.Trim().ToLower();
+            query = query.Where(p => (p.Title != null && p.Title.ToLower().Contains(kw))
+                                  || (p.Description != null && p.Description.ToLower().Contains(kw))
+                                  || (p.Address != null && p.Address.ToLower().Contains(kw))
+                                  || (p.City != null && p.City.ToLower().Contains(kw)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(city))
+        {
+            var c = city.Trim().ToLower();
+            query = query.Where(p => p.City != null && p.City.ToLower().Contains(c));
+        }
+
+        if (propertyType.HasValue)
+        {
+            query = query.Where(p => p.PropertyType == propertyType.Value);
+        }
+
+        if (minPrice.HasValue)
+        {
+            query = query.Where(p => p.Price >= minPrice.Value);
+        }
+
+        if (maxPrice.HasValue)
+        {
+            query = query.Where(p => p.Price <= maxPrice.Value);
+        }
+
+        if (bedrooms.HasValue)
+        {
+            query = query.Where(p => p.Bedrooms >= bedrooms.Value);
+        }
+
+        if (bathrooms.HasValue)
+        {
+            query = query.Where(p => p.Bathrooms >= bathrooms.Value);
+        }
+
+        if (status.HasValue)
+        {
+            query = query.Where(p => p.Status == status.Value);
+        }
+
+        // Sorting
+        query = sort switch
+        {
+            "price_asc" => query.OrderBy(p => p.Price),
+            "price_desc" => query.OrderByDescending(p => p.Price),
+            "oldest" => query.OrderBy(p => p.CreatedAt),
+            _ => query.OrderByDescending(p => p.CreatedAt), // newest default
+        };
+
+        // Pagination: validate page
+        if (page < 1) page = 1;
+
+        var totalItems = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+        if (totalPages == 0) totalPages = 1;
+        if (page > totalPages) page = totalPages;
+
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        var vm = new realEstate.Models.ViewModels.PropertyListViewModel
+        {
+            Properties = items,
+            Page = page,
+            PageSize = pageSize,
+            TotalItems = totalItems,
+            TotalPages = totalPages,
+            Search = search,
+            City = city,
+            PropertyType = propertyType,
+            MinPrice = minPrice,
+            MaxPrice = maxPrice,
+            Bedrooms = bedrooms,
+            Bathrooms = bathrooms,
+            Status = status,
+            Sort = sort
+        };
+
+        return View(vm);
     }
 
     public async Task<IActionResult> Details(int id)

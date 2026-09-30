@@ -33,6 +33,15 @@ public class PropertyRepository : IPropertyRepository
             .ToListAsync(cancellationToken);
     }
 
+    public IQueryable<Property> Query()
+    {
+        return _db.Properties
+            .Include(p => p.Images)
+            .Include(p => p.Agent)
+            .Include(p => p.Owner)
+            .AsNoTracking();
+    }
+
     public async Task<Property?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _db.Properties
