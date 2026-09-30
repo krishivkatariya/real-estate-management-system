@@ -26,6 +26,21 @@ public class PropertyController : Controller
         _favoriteRepo = favoriteRepo;
     }
 
+    [Authorize]
+    public async Task<IActionResult> MyProperties()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        var list = await _db.Properties
+            .Where(p => p.OwnerId == user.Id)
+            .Include(p => p.Images)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return View(list);
+    }
+
     // Public listing with search, filters, sort and pagination
     public async Task<IActionResult> Index(
         string? search,

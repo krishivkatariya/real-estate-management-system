@@ -36,6 +36,12 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Favorites" asp-action="Index">Favorites</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Property" asp-action="MyProperties">My Properties</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="PurchaseRequests" asp-action="MyRequests">My Requests</a>
+                            </li>
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">

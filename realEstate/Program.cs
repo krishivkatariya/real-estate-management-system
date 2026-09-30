@@ -41,6 +41,8 @@ builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 builder.Services.AddScoped<realEstate.Services.IImageService, realEstate.Services.FileImageService>();
 // Favorites
 builder.Services.AddScoped<realEstate.Repositories.IFavoriteRepository, realEstate.Repositories.FavoriteRepository>();
+// Purchase requests
+builder.Services.AddScoped<realEstate.Repositories.IPurchaseRequestRepository, realEstate.Repositories.PurchaseRequestRepository>();
 
 var app = builder.Build();
 

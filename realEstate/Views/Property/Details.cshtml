@@ -104,6 +104,41 @@
                     <button type="submit" class="btn btn-outline-danger">Add to Favorites ♡</button>
                 </form>
             }
+
+            // Purchase request section
+            if (Model.Status == realEstate.Models.PropertyStatus.Available)
+            {
+                <div class="mt-3">
+                    <h5>Interested in buying?</h5>
+                    @if (User?.Identity?.IsAuthenticated ?? false)
+                    {
+                        if (User.Identity?.Name == Model.Owner?.UserName)
+                        {
+                            <div class="alert alert-info">You are the owner of this property.</div>
+                        }
+                        else
+                        {
+                            <form asp-controller="PurchaseRequests" asp-action="Create" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="propertyId" value="@Model.Id" />
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message (optional)</label>
+                                    <textarea name="message" id="message" class="form-control" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-success">Send Purchase Request</button>
+                            </form>
+                            @if (TempData["PurchaseMessage"] != null)
+                            {
+                                <div class="alert alert-success mt-2">@TempData["PurchaseMessage"]</div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login to send a purchase request</a>
+                    }
+                </div>
+            }
         }
     </div>
 </div>

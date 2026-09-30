@@ -14,6 +14,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PropertyImage> PropertyImages { get; set; } = null!;
     public DbSet<Agent> Agents { get; set; } = null!;
     public DbSet<Favorite> Favorites { get; set; } = null!;
+    public DbSet<PurchaseRequest> PurchaseRequests { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,6 +51,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasIndex(f => new { f.UserId, f.PropertyId }).IsUnique();
             entity.HasOne(f => f.User).WithMany().HasForeignKey(f => f.UserId).OnDelete(DeleteBehavior.Cascade);
             entity.HasOne(f => f.Property).WithMany().HasForeignKey(f => f.PropertyId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PurchaseRequest>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.HasOne(r => r.User).WithMany().HasForeignKey(r => r.UserId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(r => r.Property).WithMany().HasForeignKey(r => r.PropertyId).OnDelete(DeleteBehavior.Cascade);
+            entity.Property(r => r.Message).HasMaxLength(2000);
+            entity.Property(r => r.RequestDate).HasDefaultValueSql("GETUTCDATE()");
         });
     }
 }

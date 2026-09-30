@@ -1,0 +1,36 @@
+@model IEnumerable<realEstate.Models.Property>
+
+@{
+    ViewData["Title"] = "My Properties";
+}
+
+<h2>My Properties</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">You have not listed any properties yet. <a asp-action="Create">Create one</a></div>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    @{ var img = item.Images.FirstOrDefault(); }
+                    @if (img != null)
+                    {
+                        <img class="card-img-top" src="@img.FilePath" alt="@item.Title" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Title</h5>
+                        <p class="card-text">Price: @item.Price.ToString("C")</p>
+                        <p class="card-text">Status: @item.Status</p>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">View</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

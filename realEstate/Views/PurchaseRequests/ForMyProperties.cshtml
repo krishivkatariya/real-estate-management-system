@@ -1,0 +1,51 @@
+@model IEnumerable<realEstate.Models.PurchaseRequest>
+
+@{
+    ViewData["Title"] = "Purchase Requests for My Properties";
+}
+
+<h2>Purchase Requests for My Properties</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">No purchase requests for your properties yet.</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Buyer</th>
+                <th>Message</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Property?.Title<br />@r.Property?.City</td>
+                    <td>@r.User?.Email</td>
+                    <td>@r.Message</td>
+                    <td>@r.RequestDate.ToString("g")</td>
+                    <td>@r.Status</td>
+                    <td>
+                        <form asp-action="UpdateStatus" asp-controller="PurchaseRequests" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="requestId" value="@r.Id" />
+                            <select name="status" class="form-select d-inline" style="width:auto;display:inline-block;">
+                                <option value="1">Accept</option>
+                                <option value="2">Reject</option>
+                                <option value="3">Cancel</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

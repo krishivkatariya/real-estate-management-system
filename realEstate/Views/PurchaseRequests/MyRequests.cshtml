@@ -1,0 +1,38 @@
+@model IEnumerable<realEstate.Models.PurchaseRequest>
+
+@{
+    ViewData["Title"] = "My Purchase Requests";
+}
+
+<h2>My Purchase Requests</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">You have not submitted any purchase requests yet. <a asp-controller="Property" asp-action="Index">Browse properties</a></div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Message</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Property?.Title<br />@r.Property?.City</td>
+                    <td>@r.Message</td>
+                    <td>@r.RequestDate.ToString("g")</td>
+                    <td>@r.Status</td>
+                    <td><a asp-controller="Property" asp-action="Details" asp-route-id="@r.PropertyId" class="btn btn-sm btn-outline-primary">View Property</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
