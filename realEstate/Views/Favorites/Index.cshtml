@@ -26,7 +26,7 @@ else
                         <div>
                             <h5 class="card-title">@item.Title</h5>
                             <p class="card-text">@item.City, @item.State</p>
-                            <p class="card-text">Price: @item.Price.ToString("C")</p>
+                            <p class="card-text">@(item.ListingPurpose == realEstate.Models.ListingPurpose.Rent ? "Monthly rent" : "Price"): @item.Price.ToString("C")@(item.ListingPurpose == realEstate.Models.ListingPurpose.Rent ? "/month" : string.Empty)</p>
                         </div>
                         <div class="text-end">
                             <a asp-controller="Property" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary mb-2">Details</a>

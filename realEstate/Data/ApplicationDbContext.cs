@@ -15,6 +15,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Agent> Agents { get; set; } = null!;
     public DbSet<Favorite> Favorites { get; set; } = null!;
     public DbSet<PurchaseRequest> PurchaseRequests { get; set; } = null!;
+    public DbSet<RentalTransaction> RentalTransactions { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -60,6 +61,30 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(r => r.Property).WithMany().HasForeignKey(r => r.PropertyId).OnDelete(DeleteBehavior.Cascade);
             entity.Property(r => r.Message).HasMaxLength(2000);
             entity.Property(r => r.RequestDate).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        modelBuilder.Entity<RentalTransaction>(entity =>
+        {
+            entity.HasKey(rental => rental.RentalTransactionId);
+            entity.Property(rental => rental.RentAmount).HasPrecision(18, 2);
+            entity.Property(rental => rental.Notes).HasMaxLength(2000);
+            entity.HasIndex(rental => new { rental.PropertyId, rental.Status, rental.StartDate, rental.EndDate });
+            entity.HasIndex(rental => new { rental.PropertyId, rental.RenterId })
+                .IsUnique()
+                .HasDatabaseName("UX_RentalTransactions_PendingPropertyRenter")
+                .HasFilter("[Status] = 0");
+            entity.HasOne(rental => rental.Property)
+                .WithMany(property => property.RentalTransactions)
+                .HasForeignKey(rental => rental.PropertyId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(rental => rental.Renter)
+                .WithMany(user => user.RentalsAsRenter)
+                .HasForeignKey(rental => rental.RenterId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(rental => rental.Owner)
+                .WithMany(user => user.RentalsAsOwner)
+                .HasForeignKey(rental => rental.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

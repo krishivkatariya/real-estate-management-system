@@ -42,6 +42,15 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="PurchaseRequests" asp-action="MyRequests">My Requests</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="RentalTransactions" asp-action="MyRequests">My Rental Requests</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="RentalTransactions" asp-action="OwnerRequests">Rental Requests</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="RentalTransactions" asp-action="History">Rental History</a>
+                            </li>
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
@@ -70,6 +79,11 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData["RentalMessage"] is string rentalMessage)
+            {
+                var rentalMessageType = TempData["RentalMessageType"] as string ?? "info";
+                <div class="alert alert-@rentalMessageType" role="alert">@rentalMessage</div>
+            }
             @RenderBody()
         </main>
     </div>

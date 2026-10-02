@@ -1,0 +1,35 @@
+@model IEnumerable<realEstate.Models.RentalTransaction>
+
+@{
+    ViewData["Title"] = "Rental History";
+}
+
+<h2>Rental History</h2>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No completed or closed rentals were found.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr><th>Property</th><th>Role</th><th>Dates</th><th>Monthly rent</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+            @foreach (var rental in Model)
+            {
+                <tr>
+                    <td>@rental.Property?.Title</td>
+                    <td>@(rental.RenterId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ? "Renter" : "Owner")</td>
+                    <td>@rental.StartDate.ToString("d") - @rental.EndDate.ToString("d")</td>
+                    <td>@rental.RentAmount.ToString("C")</td>
+                    <td>@rental.Status</td>
+                    <td><a asp-action="Details" asp-route-id="@rental.RentalTransactionId" class="btn btn-sm btn-outline-primary">Details</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

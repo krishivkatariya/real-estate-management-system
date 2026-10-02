@@ -36,6 +36,8 @@ public class Property
 
     public PropertyType PropertyType { get; set; } = PropertyType.Other;
 
+    public ListingPurpose ListingPurpose { get; set; } = ListingPurpose.Sale;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 
@@ -49,4 +51,5 @@ public class Property
     public ApplicationUser? Owner { get; set; }
 
     public ICollection<PropertyImage> Images { get; set; } = new List<PropertyImage>();
+    public ICollection<RentalTransaction> RentalTransactions { get; set; } = new List<RentalTransaction>();
 }

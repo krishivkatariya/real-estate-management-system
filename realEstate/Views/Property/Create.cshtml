@@ -18,7 +18,7 @@
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="Price" class="form-label"></label>
+        <label asp-for="Price" class="form-label">@(Model?.ListingPurpose == realEstate.Models.ListingPurpose.Rent ? "Monthly rent" : "Sale price")</label>
         <input asp-for="Price" class="form-control" />
         <span asp-validation-for="Price" class="text-danger"></span>
     </div>
@@ -57,6 +57,10 @@
     <div class="mb-3">
         <label asp-for="PropertyType" class="form-label"></label>
         <select asp-for="PropertyType" class="form-select" asp-items="Html.GetEnumSelectList<realEstate.Models.PropertyType>()"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ListingPurpose" class="form-label">Listing purpose</label>
+        <select asp-for="ListingPurpose" class="form-select" asp-items="Html.GetEnumSelectList<realEstate.Models.ListingPurpose>()"></select>
     </div>
     <div class="mb-3">
         <label>Images</label>

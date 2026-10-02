@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using realEstate.Data;
 
@@ -11,9 +12,11 @@ using realEstate.Data;
 namespace realEstate.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261002180305_AddRentalManagement")]
+    partial class AddRentalManagement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -476,11 +479,6 @@ namespace realEstate.Data.Migrations
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("RenterId");
-
-                    b.HasIndex("PropertyId", "RenterId")
-                        .IsUnique()
-                        .HasDatabaseName("UX_RentalTransactions_PendingPropertyRenter")
-                        .HasFilter("[Status] = 0");
 
                     b.HasIndex("PropertyId", "Status", "StartDate", "EndDate");
 

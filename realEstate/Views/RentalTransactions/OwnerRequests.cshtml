@@ -1,0 +1,59 @@
+@model IEnumerable<realEstate.Models.RentalTransaction>
+
+@{
+    ViewData["Title"] = "Rental Requests";
+}
+
+<h2>Rental Requests</h2>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">There are no rental requests for your properties.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr><th>Property</th><th>Renter</th><th>Dates</th><th>Monthly rent</th><th>Status</th><th>Requested</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            @foreach (var rental in Model)
+            {
+                <tr>
+                    <td>@rental.Property?.Title</td>
+                    <td>@(rental.Renter?.Email ?? "Renter")</td>
+                    <td>@rental.StartDate.ToString("d") - @rental.EndDate.ToString("d")</td>
+                    <td>@rental.RentAmount.ToString("C")</td>
+                    <td>@rental.Status</td>
+                    <td>@rental.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td class="text-nowrap">
+                        <a asp-action="Details" asp-route-id="@rental.RentalTransactionId" class="btn btn-sm btn-outline-primary">Details</a>
+                        @if (rental.Status == realEstate.Models.RentalStatus.Pending)
+                        {
+                            <form asp-action="Approve" asp-route-id="@rental.RentalTransactionId" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                            </form>
+                            <form asp-action="Reject" asp-route-id="@rental.RentalTransactionId" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                            </form>
+                        }
+                        @if (rental.Status == realEstate.Models.RentalStatus.Approved)
+                        {
+                            <form asp-action="Activate" asp-route-id="@rental.RentalTransactionId" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success">Activate</button>
+                            </form>
+                        }
+                        @if (rental.Status == realEstate.Models.RentalStatus.Active)
+                        {
+                            <form asp-action="Complete" asp-route-id="@rental.RentalTransactionId" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-primary">Complete</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

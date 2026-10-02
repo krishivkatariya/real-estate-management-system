@@ -16,14 +16,16 @@ public class PropertyController : Controller
     private readonly IImageService _imageService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IFavoriteRepository _favoriteRepo;
+    private readonly IRentalTransactionRepository _rentalRepo;
 
-    public PropertyController(IPropertyRepository repo, ApplicationDbContext db, IImageService imageService, UserManager<ApplicationUser> userManager, IFavoriteRepository favoriteRepo)
+    public PropertyController(IPropertyRepository repo, ApplicationDbContext db, IImageService imageService, UserManager<ApplicationUser> userManager, IFavoriteRepository favoriteRepo, IRentalTransactionRepository rentalRepo)
     {
         _repo = repo;
         _db = db;
         _imageService = imageService;
         _userManager = userManager;
         _favoriteRepo = favoriteRepo;
+        _rentalRepo = rentalRepo;
     }
 
     [Authorize]
@@ -46,6 +48,7 @@ public class PropertyController : Controller
         string? search,
         string? city,
         realEstate.Models.PropertyType? propertyType,
+        realEstate.Models.ListingPurpose? listingPurpose,
         decimal? minPrice,
         decimal? maxPrice,
         int? bedrooms,
@@ -77,6 +80,11 @@ public class PropertyController : Controller
         if (propertyType.HasValue)
         {
             query = query.Where(p => p.PropertyType == propertyType.Value);
+        }
+
+        if (listingPurpose.HasValue)
+        {
+            query = query.Where(p => p.ListingPurpose == listingPurpose.Value);
         }
 
         if (minPrice.HasValue)
@@ -133,6 +141,7 @@ public class PropertyController : Controller
             Search = search,
             City = city,
             PropertyType = propertyType,
+            ListingPurpose = listingPurpose,
             MinPrice = minPrice,
             MaxPrice = maxPrice,
             Bedrooms = bedrooms,
@@ -158,6 +167,9 @@ public class PropertyController : Controller
     {
         var property = await _repo.GetByIdAsync(id);
         if (property == null) return NotFound();
+        var user = await _userManager.GetUserAsync(User);
+        ViewData["HasOpenRentalRequest"] = user != null
+            && await _rentalRepo.HasOpenRequestAsync(user.Id, id);
         return View(property);
     }
 
@@ -172,11 +184,20 @@ public class PropertyController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Property model, List<IFormFile>? images)
     {
+        if (!Enum.IsDefined(model.ListingPurpose))
+        {
+            ModelState.AddModelError(nameof(Property.ListingPurpose), "Select a valid listing purpose.");
+        }
+        if (model.ListingPurpose == ListingPurpose.Rent && model.Price <= 0)
+        {
+            ModelState.AddModelError(nameof(Property.Price), "Monthly rent must be greater than zero.");
+        }
         if (!ModelState.IsValid) return View(model);
 
         var user = await _userManager.GetUserAsync(User);
         model.OwnerId = user?.Id;
         model.CreatedAt = DateTime.UtcNow;
+        model.Status = PropertyStatus.Available;
 
         await _repo.AddAsync(model);
         await _repo.SaveChangesAsync();
@@ -216,11 +237,44 @@ public class PropertyController : Controller
     public async Task<IActionResult> Edit(int id, Property model, List<IFormFile>? images)
     {
         if (id != model.Id) return BadRequest();
+        if (!Enum.IsDefined(model.ListingPurpose))
+        {
+            ModelState.AddModelError(nameof(Property.ListingPurpose), "Select a valid listing purpose.");
+        }
+        if (model.ListingPurpose == ListingPurpose.Rent && model.Price <= 0)
+        {
+            ModelState.AddModelError(nameof(Property.Price), "Monthly rent must be greater than zero.");
+        }
         if (!ModelState.IsValid) return View(model);
 
         var property = await _repo.GetByIdAsync(id);
         if (property == null) return NotFound();
         if (!await CanEditAsync(property)) return Forbid();
+
+        if (!Enum.IsDefined(model.ListingPurpose) || !Enum.IsDefined(model.Status)) return BadRequest();
+        if (model.Status == PropertyStatus.Rented && property.Status != PropertyStatus.Rented)
+        {
+            return BadRequest("A property can only become Rented when an approved rental is activated.");
+        }
+        if (property.Status == PropertyStatus.Rented && model.Status != PropertyStatus.Rented)
+        {
+            return BadRequest("Complete or cancel the active rental before changing the property status.");
+        }
+
+        if (model.ListingPurpose != property.ListingPurpose)
+        {
+            var hasAcceptedPurchase = await _db.PurchaseRequests.AnyAsync(request =>
+                request.PropertyId == property.Id && request.Status == PurchaseRequestStatus.Accepted);
+            var hasApprovedOrActiveRental = await _db.RentalTransactions.AnyAsync(rental =>
+                rental.PropertyId == property.Id
+                && (rental.Status == RentalStatus.Approved || rental.Status == RentalStatus.Active));
+
+            if (property.Status == PropertyStatus.Sold || property.Status == PropertyStatus.Rented
+                || hasAcceptedPurchase || hasApprovedOrActiveRental)
+            {
+                return BadRequest("The listing purpose cannot change while a sale or rental is active or completed.");
+            }
+        }
 
         // update allowed fields
         property.Title = model.Title;
@@ -234,6 +288,7 @@ public class PropertyController : Controller
         property.ZipCode = model.ZipCode;
         property.Area = model.Area;
         property.PropertyType = model.PropertyType;
+        property.ListingPurpose = model.ListingPurpose;
         property.Status = model.Status;
         property.UpdatedAt = DateTime.UtcNow;
 

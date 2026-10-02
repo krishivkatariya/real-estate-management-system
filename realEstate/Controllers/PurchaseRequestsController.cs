@@ -50,6 +50,7 @@ public class PurchaseRequestsController : Controller
         var property = await db!.Properties.FindAsync(propertyId);
         if (property == null) return NotFound();
         if (property.OwnerId == user.Id) return BadRequest("Cannot request purchase for your own property.");
+        if (property.ListingPurpose != ListingPurpose.Sale) return BadRequest("Only properties listed for sale can receive purchase requests.");
         if (property.Status != PropertyStatus.Available) return BadRequest("Property not available for sale.");
 
         // prevent duplicate pending requests
@@ -91,6 +92,19 @@ public class PurchaseRequestsController : Controller
 
         // cannot change to Pending
         if (status == PurchaseRequestStatus.Pending) return BadRequest();
+        if (!Enum.IsDefined(status) || request.Status != PurchaseRequestStatus.Pending) return BadRequest();
+
+        if (status == PurchaseRequestStatus.Accepted)
+        {
+            if (request.Property == null
+                || request.Property.ListingPurpose != ListingPurpose.Sale
+                || request.Property.Status != PropertyStatus.Available)
+            {
+                return BadRequest("This property is no longer available for sale.");
+            }
+
+            request.Property.Status = PropertyStatus.Sold;
+        }
 
         request.Status = status;
         await _requests.UpdateAsync(request);
