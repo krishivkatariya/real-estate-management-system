@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using realEstate.Models;
 using realEstate.Models.AccountViewModels;
 
@@ -9,11 +10,13 @@ public class AccountController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly ILogger<AccountController> _logger;
 
-    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -32,8 +35,14 @@ public class AccountController : Controller
         var result = await _userManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
         {
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToAction("Index", "Home");
+            // Generate email confirmation token and log the confirmation link (development)
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action("VerifyEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
+            _logger.LogInformation("Verification Link: {Link}", confirmationLink);
+
+            // Redirect the user to the Login page after successful registration
+            TempData["SuccessMessage"] = "Registration successful. Please check your email to confirm your address (if required), then log in.";
+            return RedirectToAction("Login");
         }
 
         foreach (var error in result.Errors)
@@ -42,6 +51,36 @@ public class AccountController : Controller
         }
 
         return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult RegisterConfirmation()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> VerifyEmail(string userId, string token)
+    {
+        if (userId == null || token == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return NotFound($"Unable to load user with ID '{userId}'.");
+        }
+
+        var result = await _userManager.ConfirmEmailAsync(user, token);
+        if (result.Succeeded)
+        {
+            TempData["SuccessMessage"] = "Your email has been confirmed. Please log in.";
+            return RedirectToAction("Login");
+        }
+
+        return View("VerifyEmailError");
     }
 
     [HttpGet]

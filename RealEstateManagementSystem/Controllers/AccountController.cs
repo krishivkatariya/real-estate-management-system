@@ -104,7 +104,14 @@ namespace RealEstateManagementSystem.Controllers
             }
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
-            return View(result.Succeeded ? "VerifyEmail" : "VerifyEmailError");
+            if (result.Succeeded)
+            {
+                // After successful confirmation, redirect user to login so they can authenticate
+                TempData["SuccessMessage"] = "Your email has been confirmed. Please log in.";
+                return RedirectToAction("Login");
+            }
+
+            return View("VerifyEmailError");
         }
 
         [HttpGet]

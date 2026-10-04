@@ -145,6 +145,24 @@
                         <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login to send a purchase request</a>
                     }
                 </div>
+                <div class="mt-3">
+                    <h5>Contact owner about this property</h5>
+                    @if (User?.Identity?.IsAuthenticated ?? false)
+                    {
+                        if (isOwner)
+                        {
+                            <div class="alert alert-info">You are the owner of this property.</div>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-primary" asp-controller="Inquiry" asp-action="Create" asp-route-propertyId="@Model.Id">Contact Owner</a>
+                        }
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login to contact owner</a>
+                    }
+                </div>
             }
         }
 

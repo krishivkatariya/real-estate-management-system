@@ -1,5 +1,7 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using realEstate.Data;
 using realEstate.Models;
 using realEstate.Repositories;
@@ -33,6 +35,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
     options.AccessDeniedPath = "/Account/AccessDenied";
+    // Secure cookie settings
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromDays(14);
 });
 
 // Register repositories
@@ -44,6 +52,8 @@ builder.Services.AddScoped<realEstate.Repositories.IFavoriteRepository, realEsta
 // Purchase requests
 builder.Services.AddScoped<realEstate.Repositories.IPurchaseRequestRepository, realEstate.Repositories.PurchaseRequestRepository>();
 builder.Services.AddScoped<IRentalTransactionRepository, RentalTransactionRepository>();
+// Inquiries
+builder.Services.AddScoped<realEstate.Repositories.IInquiryRepository, realEstate.Repositories.InquiryRepository>();
 
 var app = builder.Build();
 
@@ -73,6 +83,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+// Ensure authentication middleware runs before authorization so cookie-based auth works
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

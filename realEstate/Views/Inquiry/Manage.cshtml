@@ -1,0 +1,39 @@
+@model realEstate.Models.ViewModels.InquiryDetailsViewModel
+@{
+    ViewData["Title"] = "Manage Inquiry";
+}
+
+<h2>Manage Inquiry</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h5>@Model.PropertyTitle</h5>
+        <img src="@Model.PropertyImageUrl" alt="" style="width:200px;height:120px;object-fit:cover;" />
+        <p><strong>Subject:</strong> @Model.Subject</p>
+        <p><strong>Message:</strong></p>
+        <p>@Model.Message</p>
+        <p><strong>Submitted:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")</p>
+        <p><strong>Current Status:</strong> <span class="badge bg-secondary">@Model.Status</span></p>
+
+        <form asp-action="Manage" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div class="mb-3">
+                <label for="responseMessage" class="form-label">Response</label>
+                <textarea id="responseMessage" name="responseMessage" class="form-control" rows="4">@Model.ResponseMessage</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" name="status" class="form-select">
+                    @{
+                        var s = Model.Status;
+                    }
+                    <option value="Pending" selected="@(s=="Pending")">Pending</option>
+                    <option value="InProgress" selected="@(s=="InProgress")">In Progress</option>
+                    <option value="Responded" selected="@(s=="Responded")">Responded</option>
+                    <option value="Closed" selected="@(s=="Closed")">Closed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Inquiry</button>
+        </form>
+    </div>
+</div>

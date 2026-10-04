@@ -1,0 +1,27 @@
+@model realEstate.Models.ViewModels.InquiryDetailsViewModel
+@{
+    ViewData["Title"] = "Inquiry Details";
+}
+
+<h2>Inquiry Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h5>@Model.PropertyTitle</h5>
+        <img src="@Model.PropertyImageUrl" alt="" style="width:200px;height:120px;object-fit:cover;" />
+        <p><strong>Subject:</strong> @Model.Subject</p>
+        <p><strong>Message:</strong></p>
+        <p>@Model.Message</p>
+        <p><strong>Submitted:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")</p>
+        <p><strong>Status:</strong> <span class="badge bg-secondary">@Model.Status</span></p>
+
+        @if (!string.IsNullOrEmpty(Model.ResponseMessage))
+        {
+            <hr />
+            <p><strong>Response:</strong></p>
+            <p>@Model.ResponseMessage</p>
+            <p><em>Responded: @Model.RespondedAt?.ToLocalTime().ToString("g")</em></p>
+        }
+    </div>
+</div>
+
