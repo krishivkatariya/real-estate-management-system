@@ -98,6 +98,10 @@ public class DashboardController : Controller
         var totalInquiries = await _db.Inquiries.CountAsync();
         var pendingInquiries = await _db.Inquiries.CountAsync(i => i.Status == InquiryStatus.Pending);
 
+        var approvedProperties = await _db.Properties.CountAsync(p => p.ApprovalStatus == ApprovalStatus.Approved);
+        var pendingProperties = await _db.Properties.CountAsync(p => p.ApprovalStatus == ApprovalStatus.Pending);
+        var rejectedProperties = await _db.Properties.CountAsync(p => p.ApprovalStatus == ApprovalStatus.Rejected);
+
         ViewData["Title"] = "Admin Dashboard";
         ViewData["TotalUsers"] = totalUsers;
         ViewData["TotalBuyers"] = totalBuyers;
@@ -107,6 +111,9 @@ public class DashboardController : Controller
         ViewData["SoldProperties"] = soldProperties;
         ViewData["TotalInquiries"] = totalInquiries;
         ViewData["PendingInquiries"] = pendingInquiries;
+        ViewData["ApprovedProperties"] = approvedProperties;
+        ViewData["PendingProperties"] = pendingProperties;
+        ViewData["RejectedProperties"] = rejectedProperties;
 
         return View();
     }

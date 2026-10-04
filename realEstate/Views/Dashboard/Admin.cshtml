@@ -4,3 +4,53 @@
 
 <h2>Admin Dashboard</h2>
 <p>Welcome, admin. Use the admin tools to manage users, roles, and listings.</p>
+
+@await Html.PartialAsync("AdminLinksPartial")
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Total Users</h5>
+            <p class="display-6">@ViewData["TotalUsers"]</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Total Buyers</h5>
+            <p class="display-6">@ViewData["TotalBuyers"]</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Total Sellers</h5>
+            <p class="display-6">@ViewData["TotalSellers"]</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Total Properties</h5>
+            <p class="display-6">@ViewData["TotalProperties"]</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Approved Properties</h5>
+            <p class="display-6">@ViewData["ApprovedProperties"]</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Pending Properties</h5>
+            <p class="display-6">@ViewData["PendingProperties"]</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Rejected Properties</h5>
+            <p class="display-6">@ViewData["RejectedProperties"]</p>
+        </div>
+    </div>
+</div>

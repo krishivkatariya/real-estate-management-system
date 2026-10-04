@@ -1,8 +1,80 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<div class="home-hero py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="display-4 fw-bold">Find your next home</h1>
+                <p class="lead text-muted">Search trusted listings from local sellers. Submit a property and get it approved by our team.</p>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+                <form asp-controller="Property" asp-action="Index" method="get" class="row g-2 mt-4">
+                    <div class="col-8">
+                        <input name="city" class="form-control form-control-lg" placeholder="Search location (city, area)..." />
+                    </div>
+                    <div class="col-4 d-grid">
+                        <button class="btn btn-primary btn-lg" type="submit">Search Properties</button>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <small class="text-muted">Tip: leave blank and click Search to view all approved properties.</small>
+                    </div>
+                </form>
+
+                <div class="mt-4">
+                    <a asp-controller="Property" asp-action="Create" class="btn btn-outline-secondary me-2">Sell a property</a>
+                    <a asp-controller="Property" asp-action="Index" class="btn btn-link">Browse listings</a>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="hero-card p-4 shadow-sm rounded-3">
+                    <h3 class="mb-3">Featured</h3>
+                    <p class="text-muted">Quality listings, verified sellers, simple management.</p>
+                    <div class="d-flex justify-content-center mt-3">
+                        <div class="me-3 text-center">
+                            <div class="feature-num">1</div>
+                            <div class="feature-label">Verified Sellers</div>
+                        </div>
+                        <div class="me-3 text-center">
+                            <div class="feature-num">2</div>
+                            <div class="feature-label">Fast Approval</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="feature-num">3</div>
+                            <div class="feature-label">Secure Messaging</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">List your property</h5>
+                        <p class="card-text text-muted">Create a seller account and submit your property. Admin will review and approve listings.</p>
+                        <a asp-controller="Property" asp-action="Create" class="btn btn-purple">Add Property</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Find a home</h5>
+                        <p class="card-text text-muted">Use our search filters to find homes by city, type, price and area.</p>
+                        <a asp-controller="Property" asp-action="Index" class="btn btn-outline-primary">Search Listings</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Contact sellers</h5>
+                        <p class="card-text text-muted">Message sellers directly from the property page once you're logged in.</p>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary">Login to Contact</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

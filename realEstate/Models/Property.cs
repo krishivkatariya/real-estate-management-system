@@ -18,6 +18,7 @@ public class Property
 
     public int Bedrooms { get; set; }
     public int Bathrooms { get; set; }
+    public int Balconies { get; set; }
 
     [Range(0, double.MaxValue)]
     public decimal Area { get; set; }
@@ -34,6 +35,9 @@ public class Property
     [StringLength(20)]
     public string? ZipCode { get; set; }
 
+    [StringLength(20)]
+    public string? Pincode { get; set; }
+
     public PropertyType PropertyType { get; set; } = PropertyType.Other;
 
     public ListingPurpose ListingPurpose { get; set; } = ListingPurpose.Sale;
@@ -42,6 +46,16 @@ public class Property
     public DateTime? UpdatedAt { get; set; }
 
     public PropertyStatus Status { get; set; } = PropertyStatus.Available;
+
+    // Approval workflow
+    public ApprovalStatus ApprovalStatus { get; set; } = ApprovalStatus.Pending;
+    public string? RejectionReason { get; set; }
+    public DateTime? SubmittedAt { get; set; }
+
+    // Amenities stored as comma-separated list
+    public string? Amenities { get; set; }
+
+    public Furnishing? Furnishing { get; set; }
 
     public int? AgentId { get; set; }
     public Agent? Agent { get; set; }

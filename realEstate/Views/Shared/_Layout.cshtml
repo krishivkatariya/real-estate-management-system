@@ -35,7 +35,7 @@
                             </li>
 
                             @* Buyer links *@
-                            @if (User.IsInRole("Buyer"))
+                            @if (User.IsInRole("Buyer") && !User.IsInRole("Seller"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Favorites" asp-action="Index">Favorites</a>
@@ -54,6 +54,9 @@
                             @* Seller links *@
                             @if (User.IsInRole("Seller"))
                             {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Seller" asp-action="Dashboard">Dashboard</a>
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Property" asp-action="MyProperties">My Properties</a>
                                 </li>

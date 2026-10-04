@@ -9,6 +9,10 @@
 
 <h2>@Model.Title</h2>
 
+<p>
+    <a class="btn btn-secondary btn-sm" href="javascript:void(0)" onclick="(function(){ if (document.referrer) { history.back(); } else { window.location='@Url.Action("Index","Property")'; } })(); return false;">← Back</a>
+</p>
+
 <div class="row">
     <div class="col-md-8">
         @if (Model.Images != null && Model.Images.Any())
@@ -76,39 +80,42 @@
                 <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
             }
 
-            // favorite control
-            var userFav = false;
-            try
+            // favorite control: only show to Buyers who are not the owner
+            if (!isOwner && User.IsInRole("Buyer"))
             {
-                // safe: call repository via HttpContext.RequestServices
-                var favRepo = Context.RequestServices.GetService(typeof(realEstate.Repositories.IFavoriteRepository)) as realEstate.Repositories.IFavoriteRepository;
-                var userManager = Context.RequestServices.GetService(typeof(Microsoft.AspNetCore.Identity.UserManager<realEstate.Models.ApplicationUser>)) as Microsoft.AspNetCore.Identity.UserManager<realEstate.Models.ApplicationUser>;
-                var currentUser = userManager?.GetUserAsync(User).GetAwaiter().GetResult();
-                if (favRepo != null && currentUser != null)
+                var userFav = false;
+                try
                 {
-                    userFav = favRepo.IsFavoritedAsync(currentUser.Id, Model.Id).GetAwaiter().GetResult();
+                    // safe: call repository via HttpContext.RequestServices
+                    var favRepo = Context.RequestServices.GetService(typeof(realEstate.Repositories.IFavoriteRepository)) as realEstate.Repositories.IFavoriteRepository;
+                    var userManager = Context.RequestServices.GetService(typeof(Microsoft.AspNetCore.Identity.UserManager<realEstate.Models.ApplicationUser>)) as Microsoft.AspNetCore.Identity.UserManager<realEstate.Models.ApplicationUser>;
+                    var currentUser = userManager?.GetUserAsync(User).GetAwaiter().GetResult();
+                    if (favRepo != null && currentUser != null)
+                    {
+                        userFav = favRepo.IsFavoritedAsync(currentUser.Id, Model.Id).GetAwaiter().GetResult();
+                    }
                 }
-            }
-            catch
-            {
-                userFav = false;
-            }
+                catch
+                {
+                    userFav = false;
+                }
 
-            if (userFav)
-            {
-                <form asp-controller="Favorites" asp-action="Remove" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="propertyId" value="@Model.Id" />
-                    <button type="submit" class="btn btn-danger">Remove Favorite ♥</button>
-                </form>
-            }
-            else
-            {
-                <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="propertyId" value="@Model.Id" />
-                    <button type="submit" class="btn btn-outline-danger">Add to Favorites ♡</button>
-                </form>
+                if (userFav)
+                {
+                    <form asp-controller="Favorites" asp-action="Remove" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="propertyId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger">Remove Favorite ♥</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="propertyId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-outline-danger">Add to Favorites ♡</button>
+                    </form>
+                }
             }
 
             // Purchase request section
@@ -117,13 +124,9 @@
             {
                 <div class="mt-3">
                     <h5>Interested in buying?</h5>
-                    @if (User?.Identity?.IsAuthenticated ?? false)
+                    @if (!isOwner)
                     {
-                        if (isOwner)
-                        {
-                            <div class="alert alert-info">You are the owner of this property.</div>
-                        }
-                        else
+                        if (User?.Identity?.IsAuthenticated ?? false)
                         {
                             <form asp-controller="PurchaseRequests" asp-action="Create" method="post">
                                 @Html.AntiForgeryToken()
@@ -139,28 +142,24 @@
                                 <div class="alert alert-success mt-2">@TempData["PurchaseMessage"]</div>
                             }
                         }
-                    }
-                    else
-                    {
-                        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login to send a purchase request</a>
+                        else
+                        {
+                            <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login to send a purchase request</a>
+                        }
                     }
                 </div>
                 <div class="mt-3">
                     <h5>Contact owner about this property</h5>
-                    @if (User?.Identity?.IsAuthenticated ?? false)
+                    @if (!isOwner)
                     {
-                        if (isOwner)
-                        {
-                            <div class="alert alert-info">You are the owner of this property.</div>
-                        }
-                        else
+                        @if (User?.Identity?.IsAuthenticated ?? false)
                         {
                             <a class="btn btn-outline-primary" asp-controller="Inquiry" asp-action="Create" asp-route-propertyId="@Model.Id">Contact Owner</a>
                         }
-                    }
-                    else
-                    {
-                        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login to contact owner</a>
+                        else
+                        {
+                            <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login to contact owner</a>
+                        }
                     }
                 </div>
             }
@@ -189,5 +188,8 @@
                 }
             </div>
         }
+    </div>
+    <div class="mt-4">
+        <a class="btn btn-secondary" href="javascript:void(0)" onclick="(function(){ if (document.referrer) { history.back(); } else { window.location='@Url.Action("Index","Property")'; } })(); return false;">← Back</a>
     </div>
 </div>

@@ -1,0 +1,50 @@
+@model IEnumerable<realEstate.Controllers.UserListItemViewModel>
+
+@{
+    ViewData["Title"] = "Manage Users";
+    var roleFilter = ViewData["RoleFilter"] as string;
+    var search = ViewData["Search"] as string;
+}
+
+<h2>Manage Users</h2>
+
+<form class="row g-2 mb-3" method="get">
+    <div class="col-auto">
+        <input name="q" value="@search" class="form-control" placeholder="Search by name or email" />
+    </div>
+    <div class="col-auto">
+        <select name="role" class="form-select">
+            <option value="" selected="@(string.IsNullOrEmpty(roleFilter) ? "selected" : null)">All roles</option>
+            <option value="Buyer" selected="@(roleFilter=="Buyer" ? "selected" : null)">Buyer</option>
+            <option value="Seller" selected="@(roleFilter=="Seller" ? "selected" : null)">Seller</option>
+            <option value="Admin" selected="@(roleFilter=="Admin" ? "selected" : null)">Admin</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role(s)</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var u in Model)
+    {
+        <tr>
+            <td>@u.UserName</td>
+            <td>@u.Email</td>
+            <td>@u.Roles</td>
+            <td>@u.Status</td>
+            <td><a class="btn btn-sm btn-outline-primary" asp-action="UserDetails" asp-route-id="@u.Id">Details</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

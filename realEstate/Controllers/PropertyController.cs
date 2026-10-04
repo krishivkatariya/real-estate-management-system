@@ -51,15 +51,18 @@ public class PropertyController : Controller
         realEstate.Models.ListingPurpose? listingPurpose,
         decimal? minPrice,
         decimal? maxPrice,
+        decimal? minArea,
+        decimal? maxArea,
         int? bedrooms,
-        int? bathrooms,
-        realEstate.Models.PropertyStatus? status,
         string? sort,
         int page = 1)
     {
         const int pageSize = 6;
 
         var query = _repo.Query();
+
+        // Only show approved properties in public listings
+        query = query.Where(p => p.ApprovalStatus == ApprovalStatus.Approved);
 
         // Keyword search
         if (!string.IsNullOrWhiteSpace(search))
@@ -102,14 +105,14 @@ public class PropertyController : Controller
             query = query.Where(p => p.Bedrooms >= bedrooms.Value);
         }
 
-        if (bathrooms.HasValue)
+        if (minArea.HasValue)
         {
-            query = query.Where(p => p.Bathrooms >= bathrooms.Value);
+            query = query.Where(p => p.Area >= minArea.Value);
         }
 
-        if (status.HasValue)
+        if (maxArea.HasValue)
         {
-            query = query.Where(p => p.Status == status.Value);
+            query = query.Where(p => p.Area <= maxArea.Value);
         }
 
         // Sorting
@@ -145,8 +148,8 @@ public class PropertyController : Controller
             MinPrice = minPrice,
             MaxPrice = maxPrice,
             Bedrooms = bedrooms,
-            Bathrooms = bathrooms,
-            Status = status,
+            MinArea = minArea,
+            MaxArea = maxArea,
             Sort = sort
         };
 
@@ -167,7 +170,13 @@ public class PropertyController : Controller
     {
         var property = await _repo.GetByIdAsync(id);
         if (property == null) return NotFound();
+        // Restrict access to non-approved listings unless owner or admin
         var user = await _userManager.GetUserAsync(User);
+        var isOwner = user != null && property.OwnerId == user.Id;
+        if (property.ApprovalStatus != ApprovalStatus.Approved && !isOwner && !User.IsInRole("Admin"))
+        {
+            return NotFound();
+        }
         ViewData["HasOpenRentalRequest"] = user != null
             && await _rentalRepo.HasOpenRequestAsync(user.Id, id);
         return View(property);
@@ -176,7 +185,7 @@ public class PropertyController : Controller
     [Authorize(Roles = "Admin,Seller")]
     public IActionResult Create()
     {
-        return View();
+        return View(new Property());
     }
 
     [HttpPost]
@@ -198,6 +207,9 @@ public class PropertyController : Controller
         model.OwnerId = user?.Id;
         model.CreatedAt = DateTime.UtcNow;
         model.Status = PropertyStatus.Available;
+        // mark new submissions as pending approval and record submission time
+        model.ApprovalStatus = ApprovalStatus.Pending;
+        model.SubmittedAt = DateTime.UtcNow;
 
         await _repo.AddAsync(model);
         await _repo.SaveChangesAsync();
@@ -217,7 +229,17 @@ public class PropertyController : Controller
             }
         }
 
-        return RedirectToAction(nameof(Index));
+        TempData["SuccessMessage"] = "Property submitted for approval.";
+
+
+        // After creating a property, sellers should be redirected to their dashboard
+        if (User.IsInRole("Seller"))
+        {
+            return RedirectToAction("Dashboard", "Seller");
+        }
+
+        // Admins redirected to seller dashboard as well for consistency
+        return RedirectToAction("Dashboard", "Seller");
     }
 
     [Authorize]

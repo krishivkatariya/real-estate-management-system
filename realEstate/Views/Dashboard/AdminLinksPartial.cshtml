@@ -1,0 +1,11 @@
+@*
+  Partial with admin navigation links used on Admin Dashboard
+*@
+<div class="mb-3">
+    <a asp-controller="Dashboard" asp-action="Admin" class="btn btn-outline-secondary me-2">Dashboard</a>
+    <a asp-controller="AdminManagement" asp-action="Users" class="btn btn-outline-primary me-2">Manage Users</a>
+    <a asp-controller="AdminApproval" asp-action="Index" class="btn btn-outline-primary me-2">Manage Properties</a>
+    <a asp-controller="AdminApproval" asp-action="Index" asp-route-filter="Pending" class="btn btn-outline-warning me-2">Pending Approvals</a>
+    <a asp-controller="AdminApproval" asp-action="Index" asp-route-filter="Approved" class="btn btn-outline-success me-2">Approved Properties</a>
+    <a asp-controller="AdminApproval" asp-action="Index" asp-route-filter="Rejected" class="btn btn-outline-danger">Rejected Properties</a>
+</div>

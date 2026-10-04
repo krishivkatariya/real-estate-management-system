@@ -1,0 +1,81 @@
+@model IEnumerable<realEstate.Models.Property>
+
+@{
+    ViewData["Title"] = "Property Approval Management";
+    var filter = ViewData["Filter"] as string ?? "All";
+}
+
+<h2>Property Approval Management</h2>
+
+<div class="mb-3">
+    <a asp-action="Index" asp-route-filter="All" class="btn btn-outline-primary">All</a>
+    <a asp-action="Index" asp-route-filter="Pending" class="btn btn-outline-warning">Pending</a>
+    <a asp-action="Index" asp-route-filter="Approved" class="btn btn-outline-success">Approved</a>
+    <a asp-action="Index" asp-route-filter="Rejected" class="btn btn-outline-danger">Rejected</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Property</th>
+            <th>Seller</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Price</th>
+            <th>Date Submitted</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var p in Model)
+    {
+        <tr>
+            <td>@p.Title</td>
+            <td>@(p.Owner?.UserName ?? p.OwnerId)</td>
+            <td>@p.PropertyType</td>
+            <td>@p.City</td>
+            <td>@p.Price.ToString("C")</td>
+            <td>@(p.SubmittedAt?.ToLocalTime().ToString("g") ?? p.CreatedAt.ToLocalTime().ToString("g"))</td>
+            <td>@p.ApprovalStatus</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-primary">View</a>
+                @if (p.ApprovalStatus == realEstate.Models.ApprovalStatus.Pending)
+                {
+                    <form asp-action="Approve" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@p.Id" />
+                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                    </form>
+                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal-@p.Id">Reject</button>
+
+                    <div class="modal fade" id="rejectModal-@p.Id" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form asp-action="Reject" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Reject Property</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="id" value="@p.Id" />
+                                        <div class="mb-3">
+                                            <label class="form-label">Reason</label>
+                                            <textarea name="reason" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-danger">Reject</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

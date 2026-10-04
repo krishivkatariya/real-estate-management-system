@@ -29,3 +29,31 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.search-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  border: 1px solid #f0eef5;
+}
+
+.btn-purple {
+  background: #9b6bff;
+  border-color: #9b6bff;
+  color: #fff;
+}
+.btn-purple:hover {
+  background: #8756f7;
+  border-color: #8756f7;
+}
+
+.home-hero {
+  background: linear-gradient(90deg, rgba(151,126,255,0.06), rgba(38,132,255,0.03));
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+.hero-card { background: #fff; border-radius: 12px; width: 100%; }
+.feature-num { width: 48px; height: 48px; border-radius: 50%; background: #f0f6ff; display:flex; align-items:center; justify-content:center; font-weight:700; }
+.feature-label { font-size: 0.9rem; color: #666; }
+
+.card .card-body .btn-purple { margin-top: 8px; }

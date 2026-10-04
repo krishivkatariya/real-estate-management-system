@@ -1,0 +1,62 @@
+@model realEstate.Models.Property
+
+@{
+    ViewData["Title"] = "Add New Property";
+}
+
+<h2>Add New Property</h2>
+
+<div class="search-card p-4 rounded-3 border">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Location</label>
+                <input asp-for="City" class="form-control form-control-lg" placeholder="Search location..." />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Property Type</label>
+                <select asp-for="PropertyType" class="form-select form-select-lg" asp-items="Html.GetEnumSelectList<realEstate.Models.PropertyType>()"></select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Title</label>
+                <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter title" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Price (₹)</label>
+                <input asp-for="Price" class="form-control form-control-lg" placeholder="Enter price" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Listing Purpose</label>
+                <select asp-for="ListingPurpose" class="form-select form-select-lg" asp-items="Html.GetEnumSelectList<realEstate.Models.ListingPurpose>()"></select>
+            </div>
+            <div class="col-md-12 mt-2"></div>
+            <div class="col-md-12">
+                <label class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Optional description"></textarea>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Bedrooms</label>
+                <select asp-for="Bedrooms" class="form-select">
+                    <option value="0">Any</option>
+                    @for (int b = 1; b <= 5; b++) { <option value="@b">@b</option>; }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Min Area</label>
+                <input type="number" name="minArea" class="form-control" placeholder="Sq.ft" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Max Area</label>
+                <input type="number" name="maxArea" class="form-control" placeholder="Sq.ft" />
+            </div>
+            <div class="col-md-4 text-end">
+                <button type="submit" class="btn btn-purple btn-lg">Submit Property</button>
+                <a asp-action="Dashboard" class="btn btn-outline-secondary btn-lg ms-2">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

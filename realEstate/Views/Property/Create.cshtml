@@ -13,6 +13,62 @@
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
     <div class="mb-3">
+        <label asp-for="Pincode" class="form-label">Pincode</label>
+        <input asp-for="Pincode" class="form-control" />
+        <span asp-validation-for="Pincode" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Balconies" class="form-label">Balconies</label>
+        <input asp-for="Balconies" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Furnishing" class="form-label">Furnishing</label>
+        <select asp-for="Furnishing" class="form-select" asp-items="Html.GetEnumSelectList<realEstate.Models.Furnishing>()">
+            <option value="">Select</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Amenities</label>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="amenities" value="Gym" id="amenityGym" />
+                    <label class="form-check-label" for="amenityGym">Gym</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="amenities" value="24/7 Security" id="amenitySecurity" />
+                    <label class="form-check-label" for="amenitySecurity">24/7 Security</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="amenities" value="Swimming Pool" id="amenityPool" />
+                    <label class="form-check-label" for="amenityPool">Swimming Pool</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="amenities" value="Parking" id="amenityParking" />
+                    <label class="form-check-label" for="amenityParking">Parking</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="amenities" value="Garden" id="amenityGarden" />
+                    <label class="form-check-label" for="amenityGarden">Garden</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="amenities" value="Lift" id="amenityLift" />
+                    <label class="form-check-label" for="amenityLift">Lift</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="amenities" value="Clubhouse" id="amenityClubhouse" />
+                    <label class="form-check-label" for="amenityClubhouse">Clubhouse</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="amenities" value="CCTV" id="amenityCCTV" />
+                    <label class="form-check-label" for="amenityCCTV">CCTV</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
         <label asp-for="Description" class="form-label"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>

@@ -8,12 +8,9 @@
 
 <div class="row mb-3">
     <div class="col-md-8">
-        <form method="get" class="row g-2">
+        <form method="get" class="row g-2 align-items-end">
             <div class="col-md-4">
-                <input type="search" name="search" value="@Model.Search" class="form-control" placeholder="Search title, description, address" />
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="city" value="@Model.City" class="form-control" placeholder="City" />
+                <input type="search" name="city" value="@Model.City" class="form-control" placeholder="Search location..." />
             </div>
             <div class="col-md-2">
                 <select name="propertyType" class="form-select">
@@ -32,62 +29,31 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <select name="listingPurpose" class="form-select">
-                    <option value="">Sale or rent</option>
-                    @foreach (var purpose in Enum.GetValues(typeof(realEstate.Models.ListingPurpose)).Cast<realEstate.Models.ListingPurpose>())
-                    {
-                        if (Model.ListingPurpose == purpose)
-                        {
-                            <option value="@purpose" selected>@purpose</option>
-                        }
-                        else
-                        {
-                            <option value="@purpose">@purpose</option>
-                        }
-                    }
-                </select>
+                <input type="number" step="0.01" name="minPrice" value="@(Model.MinPrice?.ToString() ?? string.Empty)" class="form-control" placeholder="₹ Min" />
             </div>
             <div class="col-md-2">
-                <select name="sort" class="form-select">
-                    @if (string.IsNullOrEmpty(Model.Sort)) { <option value="" selected>Sort: Newest</option> } else { <option value="">Sort: Newest</option> }
-                    @if (Model.Sort == "oldest") { <option value="oldest" selected>Oldest</option> } else { <option value="oldest">Oldest</option> }
-                    @if (Model.Sort == "price_asc") { <option value="price_asc" selected>Price: Low to High</option> } else { <option value="price_asc">Price: Low to High</option> }
-                    @if (Model.Sort == "price_desc") { <option value="price_desc" selected>Price: High to Low</option> } else { <option value="price_desc">Price: High to Low</option> }
-                </select>
+                <input type="number" step="0.01" name="maxPrice" value="@(Model.MaxPrice?.ToString() ?? string.Empty)" class="form-control" placeholder="₹ Max" />
             </div>
             <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-primary">Apply</button>
-                <a class="btn btn-link" href="@Url.Action("Index", "Property")">Clear</a>
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a class="btn btn-outline-secondary mt-1" href="@Url.Action("Index", "Property")">Reset</a>
             </div>
             <div class="col-12 mt-2">
                 <div class="row g-2">
                     <div class="col-md-2">
-                        <input type="number" step="0.01" name="minPrice" value="@(Model.MinPrice?.ToString() ?? string.Empty)" class="form-control" placeholder="Min price" />
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" step="0.01" name="maxPrice" value="@(Model.MaxPrice?.ToString() ?? string.Empty)" class="form-control" placeholder="Max price" />
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" name="bedrooms" value="@(Model.Bedrooms?.ToString() ?? string.Empty)" class="form-control" placeholder="Bedrooms" />
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" name="bathrooms" value="@(Model.Bathrooms?.ToString() ?? string.Empty)" class="form-control" placeholder="Bathrooms" />
-                    </div>
-                    <div class="col-md-2">
-                        <select name="status" class="form-select">
-                            <option value="">Any status</option>
-                            @foreach (var st in Enum.GetValues(typeof(realEstate.Models.PropertyStatus)).Cast<realEstate.Models.PropertyStatus>())
+                        <select name="bedrooms" class="form-select">
+                            <option value="">Any</option>
+                            @for (int b = 1; b <= 5; b++)
                             {
-                                if (Model.Status == st)
-                                {
-                                    <option value="@st" selected>@st</option>
-                                }
-                                else
-                                {
-                                    <option value="@st">@st</option>
-                                }
+                                <option value="@b">@b</option>
                             }
                         </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="minArea" value="@(Model.MinArea?.ToString() ?? string.Empty)" class="form-control" placeholder="Sq.ft" />
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="maxArea" value="@(Model.MaxArea?.ToString() ?? string.Empty)" class="form-control" placeholder="Sq.ft" />
                     </div>
                 </div>
             </div>

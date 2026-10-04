@@ -12,6 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<Property> Properties { get; set; } = null!;
     public DbSet<PropertyImage> PropertyImages { get; set; } = null!;
+    // Inquiries already present
     public DbSet<Agent> Agents { get; set; } = null!;
     public DbSet<Favorite> Favorites { get; set; } = null!;
     public DbSet<PurchaseRequest> PurchaseRequests { get; set; } = null!;
@@ -52,6 +53,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<PropertyImage>(entity =>
         {
             entity.HasKey(i => i.Id);
+        });
+
+        modelBuilder.Entity<Property>(entity =>
+        {
+            entity.Property(p => p.Balconies).HasDefaultValue(0);
+            entity.Property(p => p.Pincode).HasMaxLength(20);
+            entity.Property(p => p.Amenities).HasMaxLength(2000);
+            entity.Property(p => p.RejectionReason).HasMaxLength(2000);
+            entity.Property(p => p.SubmittedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(p => p.ApprovalStatus);
         });
 
         modelBuilder.Entity<Agent>(entity =>
