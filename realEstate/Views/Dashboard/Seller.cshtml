@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Seller Dashboard";
+}
+
+<h2>@ViewData["Welcome"] - Seller Dashboard</h2>
+<p>Welcome, seller. Manage your properties and view received inquiries.</p>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Total Listed</h5>
+            <p class="display-6">@ViewData["TotalListed"]</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Available</h5>
+            <p class="display-6">@ViewData["Available"]</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Sold</h5>
+            <p class="display-6">@ViewData["Sold"]</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h5>Rented</h5>
+            <p class="display-6">@ViewData["Rented"]</p>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-4">Inquiries</h3>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Total Inquiries</h5>
+            <p class="display-6">@ViewData["TotalInquiries"]</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Pending Inquiries</h5>
+            <p class="display-6">@ViewData["PendingInquiries"]</p>
+        </div>
+    </div>
+</div>

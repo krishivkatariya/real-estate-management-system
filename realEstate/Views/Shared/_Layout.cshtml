@@ -33,30 +33,52 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Account" asp-action="">@User.Identity.Name</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Favorites" asp-action="Index">Favorites</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Property" asp-action="MyProperties">My Properties</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="PurchaseRequests" asp-action="MyRequests">My Requests</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="RentalTransactions" asp-action="MyRequests">My Rental Requests</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="RentalTransactions" asp-action="OwnerRequests">Rental Requests</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="RentalTransactions" asp-action="History">Rental History</a>
-                            </li>
+
+                            @* Buyer links *@
+                            @if (User.IsInRole("Buyer"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Favorites" asp-action="Index">Favorites</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Inquiry" asp-action="MyInquiries">My Inquiries</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="PurchaseRequests" asp-action="MyRequests">My Requests</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="RentalTransactions" asp-action="MyRequests">My Rental Requests</a>
+                                </li>
+                            }
+
+                            @* Seller links *@
+                            @if (User.IsInRole("Seller"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Property" asp-action="MyProperties">My Properties</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Property" asp-action="Create">Add Property</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Inquiry" asp-action="ReceivedInquiries">Received Inquiries</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="RentalTransactions" asp-action="OwnerRequests">Rental Requests</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="RentalTransactions" asp-action="History">Rental History</a>
+                                </li>
+                            }
+
+                            @* Admin links *@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Admin</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Admin">Admin</a>
                                 </li>
                             }
+
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
                                     <button type="submit" class="btn btn-link nav-link">Logout</button>

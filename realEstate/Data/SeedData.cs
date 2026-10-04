@@ -10,7 +10,7 @@ public static class SeedData
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<realEstate.Models.ApplicationUser>>();
 
-        var roles = new[] { "Admin", "User" };
+        var roles = new[] { "Admin", "Seller", "Buyer" };
         foreach (var role in roles)
         {
             if (!await roleManager.RoleExistsAsync(role))

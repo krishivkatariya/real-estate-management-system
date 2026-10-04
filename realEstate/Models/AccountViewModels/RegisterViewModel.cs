@@ -16,4 +16,9 @@ public class RegisterViewModel
     [DataType(DataType.Password)]
     [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    [Required]
+    [Display(Name = "Account type")]
+    [RegularExpression("Buyer|Seller|Admin", ErrorMessage = "Invalid role selection.")]
+    public string Role { get; set; } = "Buyer";
 }

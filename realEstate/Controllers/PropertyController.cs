@@ -173,14 +173,14 @@ public class PropertyController : Controller
         return View(property);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin,Seller")]
     public IActionResult Create()
     {
         return View();
     }
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Roles = "Admin,Seller")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Property model, List<IFormFile>? images)
     {

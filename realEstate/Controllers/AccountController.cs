@@ -11,12 +11,14 @@ public class AccountController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<AccountController> _logger;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
+    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
+        _roleManager = roleManager;
     }
 
     [HttpGet]
@@ -40,9 +42,46 @@ public class AccountController : Controller
             var confirmationLink = Url.Action("VerifyEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
             _logger.LogInformation("Verification Link: {Link}", confirmationLink);
 
-            // Redirect the user to the Login page after successful registration
-            TempData["SuccessMessage"] = "Registration successful. Please check your email to confirm your address (if required), then log in.";
-            return RedirectToAction("Login");
+            // Assign role based on registration input (Buyer, Seller or Admin)
+            try
+            {
+                var desiredRole = "Buyer";
+                if (Request.Form.TryGetValue("Role", out var rv))
+                {
+                    var r = rv.ToString();
+                    if (r == "Seller" || r == "Buyer" || r == "Admin") desiredRole = r;
+                }
+
+                // Ensure role exists before assigning
+                if (!await _roleManager.RoleExistsAsync(desiredRole))
+                {
+                    var roleResult = await _roleManager.CreateAsync(new IdentityRole(desiredRole));
+                    if (!roleResult.Succeeded)
+                    {
+                        _logger.LogWarning("Failed to create role {Role}: {Errors}", desiredRole, string.Join(';', roleResult.Errors.Select(e => e.Description)));
+                    }
+                }
+
+                var addResult = await _userManager.AddToRoleAsync(user, desiredRole);
+                if (!addResult.Succeeded)
+                {
+                    _logger.LogWarning("Failed to add user {User} to role {Role}: {Errors}", user.Email, desiredRole, string.Join(';', addResult.Errors.Select(e => e.Description)));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error assigning role during registration");
+            }
+
+            // Sign in the newly registered user and redirect to role-specific dashboard
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
+                return RedirectToAction("Admin", "Dashboard");
+            if (await _userManager.IsInRoleAsync(user, "Seller"))
+                return RedirectToAction("Seller", "Dashboard");
+
+            return RedirectToAction("Buyer", "Dashboard");
         }
 
         foreach (var error in result.Errors)
@@ -84,9 +123,23 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Login(string? returnUrl = null)
+    public async Task<IActionResult> Login(string? returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
+
+        if (User?.Identity?.IsAuthenticated ?? false)
+        {
+            var current = await _userManager.GetUserAsync(User);
+            if (current != null)
+            {
+                if (await _userManager.IsInRoleAsync(current, "Admin"))
+                    return RedirectToAction("Admin", "Dashboard");
+                if (await _userManager.IsInRoleAsync(current, "Seller"))
+                    return RedirectToAction("Seller", "Dashboard");
+                return RedirectToAction("Buyer", "Dashboard");
+            }
+        }
+
         return View();
     }
 
@@ -100,8 +153,20 @@ public class AccountController : Controller
         var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
+            // If a returnUrl was provided, prefer it
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
+
+            // Otherwise redirect based on role priority: Admin > Seller > Buyer
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    return RedirectToAction("Admin", "Dashboard");
+                if (await _userManager.IsInRoleAsync(user, "Seller"))
+                    return RedirectToAction("Seller", "Dashboard");
+                return RedirectToAction("Buyer", "Dashboard");
+            }
 
             return RedirectToAction("Index", "Home");
         }
