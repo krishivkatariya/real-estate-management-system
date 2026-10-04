@@ -34,6 +34,17 @@ public class SellerController : Controller
         ViewData["Approved"] = approved;
         ViewData["Rejected"] = rejected;
 
+        // Booking requests received for this seller
+        var totalRequests = await _db.BookingRequests.CountAsync(b => b.SellerId == user.Id);
+        var pendingRequests = await _db.BookingRequests.CountAsync(b => b.SellerId == user.Id && b.Status == BookingStatus.Pending);
+        var approvedRequests = await _db.BookingRequests.CountAsync(b => b.SellerId == user.Id && b.Status == BookingStatus.Approved);
+        var rejectedRequests = await _db.BookingRequests.CountAsync(b => b.SellerId == user.Id && b.Status == BookingStatus.Rejected);
+
+        ViewData["TotalRequests"] = totalRequests;
+        ViewData["PendingRequests"] = pendingRequests;
+        ViewData["ApprovedRequests"] = approvedRequests;
+        ViewData["RejectedRequests"] = rejectedRequests;
+
         // Provide the seller's properties as the view model so the Razor can render the list
         var list = await _db.Properties
             .Where(p => p.OwnerId == user.Id)

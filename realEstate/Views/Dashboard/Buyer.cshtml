@@ -3,6 +3,15 @@
     var recent = ViewData["RecentInquiries"] as IEnumerable<realEstate.Models.Inquiry>;
 }
 
+<div class="mt-4">
+    <a class="btn btn-primary me-2" asp-controller="Property" asp-action="Index">Browse Properties</a>
+    <a class="btn btn-outline-secondary me-2" asp-controller="BookingRequest" asp-action="MyRequests">My Booking Requests</a>
+    @if (User?.Identity?.IsAuthenticated ?? false)
+    {
+        <a class="btn btn-outline-primary" asp-controller="Favorites" asp-action="Index">Favorites</a>
+    }
+</div>
+
 <h2>@ViewData["Welcome"] - Buyer Dashboard</h2>
 
 <div class="row">

@@ -18,6 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PurchaseRequest> PurchaseRequests { get; set; } = null!;
     public DbSet<RentalTransaction> RentalTransactions { get; set; } = null!;
     public DbSet<Inquiry> Inquiries { get; set; } = null!;
+    public DbSet<BookingRequest> BookingRequests { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,6 +54,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<PropertyImage>(entity =>
         {
             entity.HasKey(i => i.Id);
+        });
+
+        modelBuilder.Entity<BookingRequest>(entity =>
+        {
+            entity.HasKey(b => b.Id);
+            entity.Property(b => b.PreferredTime).HasMaxLength(50).IsRequired();
+            entity.Property(b => b.Message).HasMaxLength(2000);
+            entity.Property(b => b.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasOne(b => b.Buyer).WithMany().HasForeignKey(b => b.BuyerId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(b => b.Seller).WithMany().HasForeignKey(b => b.SellerId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(b => b.Property).WithMany().HasForeignKey(b => b.PropertyId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(b => new { b.PropertyId, b.BuyerId });
         });
 
         modelBuilder.Entity<Property>(entity =>

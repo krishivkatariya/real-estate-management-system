@@ -54,6 +54,8 @@ builder.Services.AddScoped<realEstate.Repositories.IPurchaseRequestRepository, r
 builder.Services.AddScoped<IRentalTransactionRepository, RentalTransactionRepository>();
 // Inquiries
 builder.Services.AddScoped<realEstate.Repositories.IInquiryRepository, realEstate.Repositories.InquiryRepository>();
+// Booking requests
+builder.Services.AddScoped<realEstate.Repositories.IBookingRequestRepository, realEstate.Repositories.BookingRequestRepository>();
 
 var app = builder.Build();
 

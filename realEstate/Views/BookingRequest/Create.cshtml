@@ -1,0 +1,28 @@
+@model realEstate.Controllers.BookingCreateViewModel
+
+@{
+    ViewData["Title"] = "Request Booking";
+}
+
+<h2>Request Booking for @Model.PropertyTitle</h2>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PropertyId" />
+    <div class="mb-3">
+        <label class="form-label">Preferred Visit Date</label>
+        <input asp-for="PreferredDate" class="form-control" type="date" />
+        @Html.ValidationMessageFor(m => m.PreferredDate)
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Preferred Time</label>
+        <input asp-for="PreferredTime" class="form-control" placeholder="e.g., 10:00 AM" />
+        @Html.ValidationMessageFor(m => m.PreferredTime)
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Message (optional)</label>
+        <textarea asp-for="Message" class="form-control" rows="4"></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">Send Request</button>
+    <a asp-controller="Property" asp-action="Details" asp-route-id="@Model.PropertyId" class="btn btn-outline-secondary ms-2">Cancel</a>
+</form>

@@ -74,6 +74,12 @@ public class DashboardController : Controller
         var totalInquiries = await _db.Inquiries.CountAsync(i => i.Property.OwnerId == user.Id);
         var pendingInquiries = await _db.Inquiries.CountAsync(i => i.Property.OwnerId == user.Id && i.Status == InquiryStatus.Pending);
 
+        // Booking requests for this seller
+        var totalRequests = await _db.BookingRequests.CountAsync(b => b.SellerId == user.Id);
+        var pendingRequests = await _db.BookingRequests.CountAsync(b => b.SellerId == user.Id && b.Status == BookingStatus.Pending);
+        var approvedRequests = await _db.BookingRequests.CountAsync(b => b.SellerId == user.Id && b.Status == BookingStatus.Approved);
+        var rejectedRequests = await _db.BookingRequests.CountAsync(b => b.SellerId == user.Id && b.Status == BookingStatus.Rejected);
+
         ViewData["Title"] = "Seller Dashboard";
         ViewData["Welcome"] = user.UserName;
         ViewData["TotalListed"] = totalListed;
@@ -82,6 +88,10 @@ public class DashboardController : Controller
         ViewData["Rented"] = rented;
         ViewData["TotalInquiries"] = totalInquiries;
         ViewData["PendingInquiries"] = pendingInquiries;
+        ViewData["TotalRequests"] = totalRequests;
+        ViewData["PendingRequests"] = pendingRequests;
+        ViewData["ApprovedRequests"] = approvedRequests;
+        ViewData["RejectedRequests"] = rejectedRequests;
 
         return View();
     }

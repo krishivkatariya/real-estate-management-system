@@ -180,7 +180,8 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");
+        // After logout, redirect user to the login page
+        return RedirectToAction("Login", "Account");
     }
 
     [HttpGet]

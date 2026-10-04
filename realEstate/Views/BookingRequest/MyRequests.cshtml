@@ -1,0 +1,33 @@
+@model IEnumerable<realEstate.Models.BookingRequest>
+
+@{
+    ViewData["Title"] = "My Booking Requests";
+}
+
+<h2>My Booking Requests</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Property</th>
+            <th>Price</th>
+            <th>Requested</th>
+            <th>Preferred Visit</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var r in Model)
+    {
+        <tr>
+            <td><a asp-controller="BookingRequest" asp-action="Details" asp-route-id="@r.Id">@r.Property?.Title</a></td>
+            <td>@r.Property?.Price.ToString("C")</td>
+            <td>@r.CreatedAt.ToLocalTime().ToString("g")</td>
+            <td>@r.PreferredDate.ToString("d") @r.PreferredTime</td>
+            <td>@r.Status</td>
+            <td><a asp-controller="BookingRequest" asp-action="Details" asp-route-id="@r.Id" class="btn btn-sm btn-outline-primary">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

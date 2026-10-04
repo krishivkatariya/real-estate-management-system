@@ -80,6 +80,12 @@
                 <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
             }
 
+            // Booking request button for authenticated buyers who are not the owner and property is approved
+            if (!isOwner && Model.ApprovalStatus == realEstate.Models.ApprovalStatus.Approved && User.IsInRole("Buyer"))
+            {
+                <a class="btn btn-success ms-2" asp-controller="BookingRequest" asp-action="Create" asp-route-propertyId="@Model.Id">Request Booking</a>
+            }
+
             // favorite control: only show to Buyers who are not the owner
             if (!isOwner && User.IsInRole("Buyer"))
             {
