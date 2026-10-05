@@ -1,60 +1,54 @@
 @{
     ViewData["Title"] = "Buyer Dashboard";
-    var recent = ViewData["RecentInquiries"] as IEnumerable<realEstate.Models.Inquiry>;
 }
 
-<div class="mt-4">
-    <a class="btn btn-primary me-2" asp-controller="Property" asp-action="Index">Browse Properties</a>
-    <a class="btn btn-outline-secondary me-2" asp-controller="BookingRequest" asp-action="MyRequests">My Booking Requests</a>
-    @if (User?.Identity?.IsAuthenticated ?? false)
-    {
-        <a class="btn btn-outline-primary" asp-controller="Favorites" asp-action="Index">Favorites</a>
-    }
+<div class="container mt-3">
+
+    <h2>@User.Identity?.Name - Welcome</h2>
+
+    <div class="mt-4">
+        <a class="btn btn-primary me-2"
+           asp-controller="Property"
+           asp-action="Index">
+            Browse Properties
+        </a>
+
+        <a class="btn btn-outline-secondary me-2"
+           asp-controller="BookingRequest"
+           asp-action="MyRequests">
+            My Booking Requests
+        </a>
+
+        <a class="btn btn-outline-primary"
+           asp-controller="Favorites"
+           asp-action="Index">
+            Favorites
+        </a>
+    </div>
+
+    <div class="row mt-4">
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Total Favorites</h5>
+                <p class="display-6">@ViewData["FavoritesCount"]</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Purchase Requests</h5>
+                <p class="display-6">@ViewData["PurchaseCount"]</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Rental Requests</h5>
+                <p class="display-6">@ViewData["RentalCount"]</p>
+            </div>
+        </div>
+
+    </div>
+
 </div>
-
-<h2>@ViewData["Welcome"] - Buyer Dashboard</h2>
-
-<div class="row">
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Total Favorites</h5>
-            <p class="display-6">@ViewData["FavoritesCount"]</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Purchase Requests</h5>
-            <p class="display-6">@ViewData["PurchaseCount"]</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Rental Requests</h5>
-            <p class="display-6">@ViewData["RentalCount"]</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Inquiries</h5>
-            <p class="display-6">@ViewData["InquiriesCount"]</p>
-        </div>
-    </div>
-</div>
-
-<h3 class="mt-4">Recent Inquiries</h3>
-@if (recent == null || !recent.Any())
-{
-    <div class="alert alert-info">You haven't sent any inquiries yet.</div>
-}
-else
-{
-    <ul class="list-group">
-        @foreach (var i in recent)
-        {
-            <li class="list-group-item">
-                <strong>@i.Subject</strong> for <a asp-controller="Property" asp-action="Details" asp-route-id="@i.PropertyId">@i.Property?.Title</a>
-                <span class="text-muted float-end">@i.CreatedAt.ToLocalTime().ToString("g")</span>
-            </li>
-        }
-    </ul>
-}

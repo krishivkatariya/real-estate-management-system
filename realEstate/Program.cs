@@ -52,8 +52,7 @@ builder.Services.AddScoped<realEstate.Repositories.IFavoriteRepository, realEsta
 // Purchase requests
 builder.Services.AddScoped<realEstate.Repositories.IPurchaseRequestRepository, realEstate.Repositories.PurchaseRequestRepository>();
 builder.Services.AddScoped<IRentalTransactionRepository, RentalTransactionRepository>();
-// Inquiries
-builder.Services.AddScoped<realEstate.Repositories.IInquiryRepository, realEstate.Repositories.InquiryRepository>();
+// Inquiries - removed
 // Booking requests
 builder.Services.AddScoped<realEstate.Repositories.IBookingRequestRepository, realEstate.Repositories.BookingRequestRepository>();
 

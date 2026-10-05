@@ -17,7 +17,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Favorite> Favorites { get; set; } = null!;
     public DbSet<PurchaseRequest> PurchaseRequests { get; set; } = null!;
     public DbSet<RentalTransaction> RentalTransactions { get; set; } = null!;
-    public DbSet<Inquiry> Inquiries { get; set; } = null!;
+    // Inquiries removed
     public DbSet<BookingRequest> BookingRequests { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,17 +39,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                   .OnDelete(DeleteBehavior.SetNull);
         });
 
-        modelBuilder.Entity<Inquiry>(entity =>
-        {
-            entity.HasKey(i => i.Id);
-            entity.Property(i => i.Subject).HasMaxLength(200).IsRequired();
-            entity.Property(i => i.Message).HasMaxLength(2000).IsRequired();
-            entity.Property(i => i.ResponseMessage).HasMaxLength(2000);
-            entity.Property(i => i.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
-            entity.HasOne(i => i.User).WithMany().HasForeignKey(i => i.UserId).OnDelete(DeleteBehavior.Cascade);
-            entity.HasOne(i => i.Property).WithMany().HasForeignKey(i => i.PropertyId).OnDelete(DeleteBehavior.Cascade);
-            entity.HasIndex(i => new { i.PropertyId, i.UserId });
-        });
+        // Inquiry entity removed
 
         modelBuilder.Entity<PropertyImage>(entity =>
         {

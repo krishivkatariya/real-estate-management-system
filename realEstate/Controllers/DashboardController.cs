@@ -40,14 +40,9 @@ public class DashboardController : Controller
         var favoritesCount = await _db.Favorites.CountAsync(f => f.UserId == user.Id);
         var purchaseCount = await _db.PurchaseRequests.CountAsync(p => p.UserId == user.Id);
         var rentalCount = await _db.RentalTransactions.CountAsync(r => r.RenterId == user.Id);
-        var inquiriesCount = await _db.Inquiries.CountAsync(i => i.UserId == user.Id);
-
-        var recentInquiries = await _db.Inquiries
-            .Where(i => i.UserId == user.Id)
-            .Include(i => i.Property)
-            .OrderByDescending(i => i.CreatedAt)
-            .Take(5)
-            .ToListAsync();
+        // inquiries feature removed
+        var inquiriesCount = 0;
+        var recentInquiries = new List<object>();
 
         ViewData["Title"] = "Buyer Dashboard";
         ViewData["Welcome"] = user.UserName;
@@ -71,8 +66,8 @@ public class DashboardController : Controller
         // Treat 'Accepted' purchase requests as sold
         var sold = await _db.PurchaseRequests.CountAsync(pr => pr.Property.OwnerId == user.Id && pr.Status == realEstate.Models.PurchaseRequestStatus.Accepted);
         var rented = await _db.RentalTransactions.CountAsync(r => r.OwnerId == user.Id && r.Status == realEstate.Models.RentalStatus.Active);
-        var totalInquiries = await _db.Inquiries.CountAsync(i => i.Property.OwnerId == user.Id);
-        var pendingInquiries = await _db.Inquiries.CountAsync(i => i.Property.OwnerId == user.Id && i.Status == InquiryStatus.Pending);
+        var totalInquiries = 0;
+        var pendingInquiries = 0;
 
         // Booking requests for this seller
         var totalRequests = await _db.BookingRequests.CountAsync(b => b.SellerId == user.Id);
@@ -105,8 +100,8 @@ public class DashboardController : Controller
         var totalProperties = await _db.Properties.CountAsync();
         var availableProperties = await _db.Properties.CountAsync(p => p.Status == PropertyStatus.Available);
         var soldProperties = await _db.PurchaseRequests.CountAsync(pr => pr.Status == realEstate.Models.PurchaseRequestStatus.Accepted);
-        var totalInquiries = await _db.Inquiries.CountAsync();
-        var pendingInquiries = await _db.Inquiries.CountAsync(i => i.Status == InquiryStatus.Pending);
+        var totalInquiries = 0;
+        var pendingInquiries = 0;
 
         var approvedProperties = await _db.Properties.CountAsync(p => p.ApprovalStatus == ApprovalStatus.Approved);
         var pendingProperties = await _db.Properties.CountAsync(p => p.ApprovalStatus == ApprovalStatus.Pending);
