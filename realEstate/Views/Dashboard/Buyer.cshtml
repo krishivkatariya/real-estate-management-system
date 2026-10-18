@@ -2,53 +2,354 @@
     ViewData["Title"] = "Buyer Dashboard";
 }
 
-<div class="container mt-3">
+<div class="container buyer-dashboard py-4">
 
-    <h2>@User.Identity?.Name - Welcome</h2>
+    <!-- Welcome Section -->
+    <div class="buyer-welcome mb-4">
+        <div>
+            <span class="buyer-eyebrow">BUYER DASHBOARD</span>
+            <h2 class="buyer-title mt-2">
+                Welcome back!
+            </h2>
+            <p class="buyer-subtitle mb-0">
+                @User.Identity?.Name — manage your properties and requests in one place.
+            </p>
+        </div>
+        <div class="buyer-welcome-icon">
+            <span>⌂</span>
+        </div>
+    </div>
 
-    <div class="mt-4">
-        <a class="btn btn-primary me-2"
+    <!-- Quick Actions -->
+    <div class="buyer-actions mb-4">
+        <a class="btn btn-primary buyer-action-primary"
            asp-controller="Property"
            asp-action="Index">
             Browse Properties
         </a>
 
-        <a class="btn btn-outline-secondary me-2"
+        <a class="btn btn-outline-secondary buyer-action"
            asp-controller="BookingRequest"
            asp-action="MyRequests">
             My Booking Requests
         </a>
 
-        <a class="btn btn-outline-primary"
+        <a class="btn btn-outline-primary buyer-action"
            asp-controller="Favorites"
            asp-action="Index">
-            Favorites
+            ♡ Favorites
         </a>
     </div>
 
-    <div class="row mt-4">
+    <!-- Dashboard Statistics -->
+    <div class="buyer-section-heading mb-3">
+        <h4>Your Overview</h4>
+        <p class="mb-0">A quick look at your property activity.</p>
+    </div>
 
+    <div class="row g-4">
+
+        <!-- Favorites -->
         <div class="col-md-4">
-            <div class="card p-3">
-                <h5>Total Favorites</h5>
-                <p class="display-6">@ViewData["FavoritesCount"]</p>
+            <div class="card buyer-stat-card buyer-stat-blue h-100">
+                <div class="buyer-stat-top">
+                    <div>
+                        <p class="buyer-stat-label">Total Favorites</p>
+                        <h2 class="buyer-stat-number">
+                            @(ViewData["FavoritesCount"] ?? 0)
+                        </h2>
+                    </div>
+                    <div class="buyer-stat-icon">♡</div>
+                </div>
+
+                <a class="buyer-stat-link"
+                   asp-controller="Favorites"
+                   asp-action="Index">
+                    View Favorites <span>→</span>
+                </a>
             </div>
         </div>
 
+        <!-- Purchase Requests -->
         <div class="col-md-4">
-            <div class="card p-3">
-                <h5>Purchase Requests</h5>
-                <p class="display-6">@ViewData["PurchaseCount"]</p>
+            <div class="card buyer-stat-card buyer-stat-purple h-100">
+                <div class="buyer-stat-top">
+                    <div>
+                        <p class="buyer-stat-label">Purchase Requests</p>
+                        <h2 class="buyer-stat-number">
+                            @(ViewData["PurchaseCount"] ?? 0)
+                        </h2>
+                    </div>
+                    <div class="buyer-stat-icon">⌂</div>
+                </div>
+
+                <a class="buyer-stat-link"
+                   asp-controller="PurchaseRequests"
+                   asp-action="MyRequests">
+                    View Requests <span>→</span>
+                </a>
             </div>
         </div>
 
+        <!-- Rental Requests -->
         <div class="col-md-4">
-            <div class="card p-3">
-                <h5>Rental Requests</h5>
-                <p class="display-6">@ViewData["RentalCount"]</p>
+            <div class="card buyer-stat-card buyer-stat-green h-100">
+                <div class="buyer-stat-top">
+                    <div>
+                        <p class="buyer-stat-label">Rental Requests</p>
+                        <h2 class="buyer-stat-number">
+                            @(ViewData["RentalCount"] ?? 0)
+                        </h2>
+                    </div>
+                    <div class="buyer-stat-icon">⌂</div>
+                </div>
+
+                <a class="buyer-stat-link"
+                   asp-controller="RentalTransactions"
+                   asp-action="MyRequests">
+                    View Rental Requests <span>→</span>
+                </a>
             </div>
         </div>
 
     </div>
 
+    <!-- Bottom Information -->
+    <div class="buyer-bottom-panel mt-4">
+        <div>
+            <h5>Looking for your next home?</h5>
+            <p class="mb-0">
+                Explore available properties and find one that suits your needs.
+            </p>
+        </div>
+
+        <a class="btn btn-primary"
+           asp-controller="Property"
+           asp-action="Index">
+            Explore Properties →
+        </a>
+    </div>
+
 </div>
+
+<style>
+    .buyer-dashboard {
+        max-width: 1120px;
+        min-height: 65vh;
+    }
+
+    .buyer-welcome {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 30px;
+        background: linear-gradient(135deg, #ffffff, #eaf3ff);
+        border: 1px solid #dce9fb;
+        border-radius: 18px;
+    }
+
+    .buyer-eyebrow {
+        color: #1769e0;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+    }
+
+    .buyer-title {
+        color: #172b4d;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+        font-weight: 750;
+    }
+
+    .buyer-subtitle {
+        color: #66758a;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .buyer-welcome-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 76px;
+        height: 76px;
+        border-radius: 22px;
+        background: #1769e0;
+        color: white;
+        font-size: 2.5rem;
+        box-shadow: 0 8px 20px rgba(23, 105, 224, 0.18);
+    }
+
+    .buyer-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .buyer-action,
+    .buyer-action-primary {
+        padding: 10px 18px;
+        border-radius: 9px;
+        font-weight: 600;
+    }
+
+    .buyer-section-heading h4 {
+        color: #172b4d;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .buyer-section-heading p {
+        color: #758195;
+        font-size: 0.95rem;
+    }
+
+    .buyer-stat-card {
+        padding: 23px;
+        border: 1px solid #e4eaf3;
+        border-radius: 16px;
+        box-shadow: 0 5px 18px rgba(28, 55, 90, 0.045);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .buyer-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 24px rgba(28, 55, 90, 0.09);
+    }
+
+    .buyer-stat-blue {
+        background: linear-gradient(145deg, #ffffff, #f0f6ff);
+    }
+
+    .buyer-stat-purple {
+        background: linear-gradient(145deg, #ffffff, #f4f1ff);
+    }
+
+    .buyer-stat-green {
+        background: linear-gradient(145deg, #ffffff, #effaf4);
+    }
+
+    .buyer-stat-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+
+    .buyer-stat-label {
+        color: #65748a;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .buyer-stat-number {
+        color: #172b4d;
+        font-size: 2.5rem;
+        font-weight: 750;
+        line-height: 1;
+        margin: 0;
+    }
+
+    .buyer-stat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: #dceaff;
+        color: #1769e0;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .buyer-stat-purple .buyer-stat-icon {
+        background: #e8e0ff;
+        color: #7653d6;
+    }
+
+    .buyer-stat-green .buyer-stat-icon {
+        background: #d9f5e5;
+        color: #188653;
+    }
+
+    .buyer-stat-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 14px;
+        border-top: 1px solid rgba(120, 140, 165, 0.2);
+        color: #1769e0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .buyer-stat-link:hover {
+        color: #0b4fb5;
+    }
+
+    .buyer-bottom-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 25px 28px;
+        background: #ffffff;
+        border: 1px solid #e2eaf5;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(28, 55, 90, 0.04);
+    }
+
+    .buyer-bottom-panel h5 {
+        color: #172b4d;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .buyer-bottom-panel p {
+        color: #758195;
+        line-height: 1.6;
+    }
+
+    .buyer-bottom-panel .btn {
+        flex-shrink: 0;
+        border-radius: 9px;
+        padding: 11px 18px;
+        font-weight: 600;
+    }
+
+    @@media (max-width: 576px) {
+        .buyer-welcome {
+            padding: 22px;
+        }
+
+        .buyer-welcome-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 15px;
+            font-size: 1.8rem;
+        }
+
+        .buyer-actions {
+            flex-direction: column;
+        }
+
+        .buyer-actions .btn {
+            width: 100%;
+        }
+
+        .buyer-bottom-panel {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .buyer-bottom-panel .btn {
+            width: 100%;
+        }
+    }
+</style>

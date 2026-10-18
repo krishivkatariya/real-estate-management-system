@@ -2,55 +2,156 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<h2>Admin Dashboard</h2>
-<p>Welcome, admin. Use the admin tools to manage users, roles, and listings.</p>
+<style>
+    .management-dashboard {
+        max-width: 1200px;
+        min-height: 65vh;
+    }
 
-@await Html.PartialAsync("AdminLinksPartial")
+    .management-header {
+        padding: 28px;
+        margin-bottom: 28px;
+        border: 1px solid #dce8f8;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #fff, #edf4ff);
+    }
 
-<div class="row mt-4">
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Total Users</h5>
-            <p class="display-6">@ViewData["TotalUsers"]</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Total Buyers</h5>
-            <p class="display-6">@ViewData["TotalBuyers"]</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Total Sellers</h5>
-            <p class="display-6">@ViewData["TotalSellers"]</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Total Properties</h5>
-            <p class="display-6">@ViewData["TotalProperties"]</p>
-        </div>
-    </div>
-</div>
+    .management-header h2 {
+        color: #172b4d;
+        font-weight: 750;
+    }
 
-<div class="row mt-3">
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Approved Properties</h5>
-            <p class="display-6">@ViewData["ApprovedProperties"]</p>
+    .management-header p,
+    .management-description {
+        color: #718096;
+    }
+
+    .management-section-title {
+        color: #172b4d;
+        font-weight: 700;
+    }
+
+    .management-stat {
+        height: 100%;
+        padding: 22px;
+        background: #fff;
+        border: 1px solid #e2eaf5;
+        border-radius: 15px;
+        box-shadow: 0 5px 18px rgba(28, 55, 90, .05);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .management-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 9px 22px rgba(28, 55, 90, .09);
+    }
+
+    .management-stat h5 {
+        color: #65748a;
+        font-size: .95rem;
+        font-weight: 600;
+    }
+
+    .management-stat .display-6 {
+        color: #1769e0;
+        font-weight: 750;
+        margin: 12px 0 0;
+    }
+
+    .management-stat.approved .display-6 {
+        color: #198754;
+    }
+
+    .management-stat.pending .display-6 {
+        color: #d18b00;
+    }
+
+    .management-stat.rejected .display-6 {
+        color: #dc3545;
+    }
+
+    .management-section {
+        margin-top: 30px;
+    }
+
+    @@media (max-width: 576px) {
+        .management-header {
+            padding: 22px;
+        }
+    }
+</style>
+
+<div class="container management-dashboard py-4">
+
+    <div class="management-header">
+        <span class="text-primary fw-bold small">ADMINISTRATION</span>
+        <h2 class="mt-2">Admin Dashboard</h2>
+        <p class="mb-0">
+            Welcome, admin. Manage users, roles, and property listings.
+        </p>
+    </div>
+
+    <div class="mb-4">
+        @await Html.PartialAsync("AdminLinksPartial")
+    </div>
+
+    <h4 class="management-section-title mb-3">Platform Overview</h4>
+
+    <div class="row g-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="management-stat">
+                <h5>Total Users</h5>
+                <p class="display-6">@ViewData["TotalUsers"]</p>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="management-stat">
+                <h5>Total Buyers</h5>
+                <p class="display-6">@ViewData["TotalBuyers"]</p>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="management-stat">
+                <h5>Total Sellers</h5>
+                <p class="display-6">@ViewData["TotalSellers"]</p>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="management-stat">
+                <h5>Total Properties</h5>
+                <p class="display-6">@ViewData["TotalProperties"]</p>
+            </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Pending Properties</h5>
-            <p class="display-6">@ViewData["PendingProperties"]</p>
+
+    <div class="management-section">
+        <h4 class="management-section-title mb-3">Property Approval Status</h4>
+
+        <div class="row g-4">
+            <div class="col-12 col-md-4">
+                <div class="management-stat approved">
+                    <h5>Approved Properties</h5>
+                    <p class="display-6">@ViewData["ApprovedProperties"]</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="management-stat pending">
+                    <h5>Pending Properties</h5>
+                    <p class="display-6">@ViewData["PendingProperties"]</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="management-stat rejected">
+                    <h5>Rejected Properties</h5>
+                    <p class="display-6">@ViewData["RejectedProperties"]</p>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Rejected Properties</h5>
-            <p class="display-6">@ViewData["RejectedProperties"]</p>
-        </div>
-    </div>
+
 </div>

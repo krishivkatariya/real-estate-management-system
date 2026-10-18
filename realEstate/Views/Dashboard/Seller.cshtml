@@ -2,52 +2,189 @@
     ViewData["Title"] = "Seller Dashboard";
 }
 
-<h2>@ViewData["Welcome"] - Welcome</h2>
-<p>Welcome, seller. Manage your properties and view received inquiries.</p>
+<style>
+    .seller-dashboard {
+        max-width: 1200px;
+        min-height: 65vh;
+    }
 
-<div class="row">
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Total Listed</h5>
-            <p class="display-6">@ViewData["TotalListed"]</p>
+    .seller-header {
+        padding: 28px;
+        margin-bottom: 28px;
+        border: 1px solid #dce8f8;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #fff, #edf4ff);
+    }
+
+    .seller-header h2 {
+        color: #172b4d;
+        font-weight: 750;
+        overflow-wrap: anywhere;
+    }
+
+    .seller-header p,
+    .seller-section-description {
+        color: #718096;
+    }
+
+    .seller-section-title {
+        color: #172b4d;
+        font-weight: 700;
+    }
+
+    .seller-stat {
+        height: 100%;
+        padding: 22px;
+        background: #fff;
+        border: 1px solid #e2eaf5;
+        border-radius: 15px;
+        box-shadow: 0 5px 18px rgba(28, 55, 90, .05);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .seller-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 9px 22px rgba(28, 55, 90, .09);
+    }
+
+    .seller-stat h5 {
+        color: #65748a;
+        font-size: .95rem;
+        font-weight: 600;
+    }
+
+    .seller-stat .display-6 {
+        color: #1769e0;
+        font-weight: 750;
+        margin: 12px 0 0;
+    }
+
+    .seller-stat.available .display-6 {
+        color: #198754;
+    }
+
+    .seller-stat.sold .display-6 {
+        color: #7653d6;
+    }
+
+    .seller-stat.rented .display-6 {
+        color: #087e8b;
+    }
+
+    .seller-action-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-top: 28px;
+        padding: 22px 25px;
+        border: 1px solid #dce8f8;
+        border-radius: 15px;
+        background: #f5f9ff;
+    }
+
+    .seller-action-panel h5 {
+        color: #172b4d;
+        font-weight: 700;
+    }
+
+    .seller-action-panel p {
+        color: #718096;
+        margin-bottom: 0;
+    }
+
+    .seller-action-panel .btn {
+        flex-shrink: 0;
+        border-radius: 9px;
+        padding: 10px 16px;
+        font-weight: 600;
+    }
+
+    @@media (max-width: 576px) {
+        .seller-header {
+            padding: 22px;
+        }
+
+        .seller-action-panel {
+            align-items: stretch;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="container seller-dashboard py-4">
+
+    <div class="seller-header">
+        <span class="text-primary fw-bold small">SELLER WORKSPACE</span>
+        <h2 class="mt-2">Welcome, @ViewData["Welcome"]!</h2>
+        <p class="mb-0">
+            Manage your property listings and track their current status.
+        </p>
+    </div>
+
+    <h4 class="seller-section-title mb-3">Property Overview</h4>
+
+    <div class="row g-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="seller-stat">
+                <h5>Total Listed</h5>
+                <p class="display-6">@ViewData["TotalListed"]</p>
+            </div>
         </div>
 
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="seller-stat available">
+                <h5>Available</h5>
+                <p class="display-6">@ViewData["Available"]</p>
+            </div>
+        </div>
 
-    </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Available</h5>
-            <p class="display-6">@ViewData["Available"]</p>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="seller-stat sold">
+                <h5>Sold</h5>
+                <p class="display-6">@ViewData["Sold"]</p>
+            </div>
         </div>
-    </div>
-<h3 class="mt-4">Booking Requests</h3>
-<p class="mt-2"><a class="btn btn-primary" asp-controller="BookingRequest" asp-action="Received">View Booking Requests</a></p>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Sold</h5>
-            <p class="display-6">@ViewData["Sold"]</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h5>Rented</h5>
-            <p class="display-6">@ViewData["Rented"]</p>
-        </div>
-    </div>
-</div>
 
-<h3 class="mt-4">Inquiries</h3>
-<div class="row">
-    <div class="col-md-6">
-        <div class="card p-3">
-            <h5>Total Inquiries</h5>
-            <p class="display-6">@ViewData["TotalInquiries"]</p>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="seller-stat rented">
+                <h5>Rented</h5>
+                <p class="display-6">@ViewData["Rented"]</p>
+            </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card p-3">
-            <h5>Pending Inquiries</h5>
-            <p class="display-6">@ViewData["PendingInquiries"]</p>
+
+    <div class="seller-action-panel">
+        <div>
+            <h5>Booking Requests</h5>
+            <p>Review booking requests received for your properties.</p>
+        </div>
+
+        <a class="btn btn-primary"
+           asp-controller="BookingRequest"
+           asp-action="Received">
+            View Booking Requests →
+        </a>
+    </div>
+
+    <div class="mt-4">
+        <h4 class="seller-section-title mb-3">Inquiries</h4>
+
+        <div class="row g-4">
+            <div class="col-12 col-md-6">
+                <div class="seller-stat">
+                    <h5>Total Inquiries</h5>
+                    <p class="display-6">@ViewData["TotalInquiries"]</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="seller-stat">
+                    <h5>Pending Inquiries</h5>
+                    <p class="display-6">@ViewData["PendingInquiries"]</p>
+                </div>
+            </div>
         </div>
     </div>
+
 </div>

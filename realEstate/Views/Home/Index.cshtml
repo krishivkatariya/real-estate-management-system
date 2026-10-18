@@ -5,8 +5,8 @@
 <style>
     .home-page {
         min-height: 75vh;
-        background: #faf9f7;
-        color: #202020;
+        background: linear-gradient(180deg, #ffffff 0%, #f2f7ff 100%);
+        color: #172033;
         padding: 90px 0 70px;
     }
 
@@ -16,7 +16,7 @@
     }
 
     .home-label {
-        color: #8b65e8;
+        color: #1769e0;
         font-size: 13px;
         font-weight: 700;
         letter-spacing: 3px;
@@ -30,14 +30,15 @@
         letter-spacing: -4px;
         line-height: 1.05;
         margin-bottom: 24px;
+        color: #172033;
     }
 
     .home-title span {
-        color: #8b65e8;
+        color: #1769e0;
     }
 
     .home-description {
-        color: #777;
+        color: #66758a;
         font-size: 18px;
         line-height: 1.8;
         max-width: 590px;
@@ -48,10 +49,10 @@
         display: flex;
         gap: 10px;
         padding: 9px;
-        background: white;
-        border: 1px solid #e7e5e2;
+        background: #ffffff;
+        border: 1px solid #dce7f7;
         border-radius: 12px;
-        box-shadow: 0 10px 35px rgba(0,0,0,0.04);
+        box-shadow: 0 10px 35px rgba(23, 105, 224, 0.07);
         max-width: 650px;
     }
 
@@ -62,20 +63,31 @@
         box-shadow: none !important;
         padding: 13px;
         font-size: 15px;
+        background: transparent;
+        color: #172033;
+    }
+
+    .home-search input:focus {
+        outline: none;
+    }
+
+    .home-search input::placeholder {
+        color: #8491a5;
     }
 
     .home-search button {
-        background: #242424;
-        color: white;
+        background: #1769e0;
+        color: #ffffff;
         border: none;
         padding: 13px 24px;
         border-radius: 8px;
         white-space: nowrap;
-        transition: 0.2s;
+        font-weight: 600;
+        transition: background 0.2s ease;
     }
 
     .home-search button:hover {
-        background: #8b65e8;
+        background: #0f52b5;
     }
 
     .home-links {
@@ -86,21 +98,22 @@
     }
 
     .home-links a {
-        color: #555;
+        color: #40536e;
         font-size: 14px;
         text-decoration: none;
-        border-bottom: 1px solid #aaa;
+        border-bottom: 1px solid #a8bad3;
         padding-bottom: 4px;
+        transition: color 0.2s ease, border-color 0.2s ease;
     }
 
     .home-links a:hover {
-        color: #8b65e8;
-        border-color: #8b65e8;
+        color: #1769e0;
+        border-color: #1769e0;
     }
 
     .home-divider {
         height: 1px;
-        background: #e8e6e2;
+        background: #dce7f5;
         margin: 85px 0 30px;
     }
 
@@ -112,25 +125,27 @@
     }
 
     .home-bottom h5 {
-        font-weight: 600;
+        color: #172033;
+        font-weight: 650;
         margin-bottom: 7px;
     }
 
     .home-bottom p {
-        color: #888;
+        color: #758399;
         font-size: 14px;
         margin: 0;
     }
 
     .home-bottom a {
-        color: #8b65e8;
+        color: #1769e0;
         text-decoration: none;
         font-weight: 600;
         white-space: nowrap;
+        transition: color 0.2s ease;
     }
 
     .home-bottom a:hover {
-        color: #7048d2;
+        color: #0f52b5;
     }
 
     @@media (max-width: 600px) {
@@ -171,7 +186,6 @@
 </style>
 
 <div class="home-page">
-
     <div class="container">
 
         <div class="home-content">
@@ -240,5 +254,4 @@
         </div>
 
     </div>
-
 </div>

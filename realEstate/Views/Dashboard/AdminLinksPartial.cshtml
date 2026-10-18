@@ -1,11 +1,65 @@
+
 @*
-  Partial with admin navigation links used on Admin Dashboard
+    Partial with admin navigation links used on Admin Dashboard
 *@
-<div class="mb-3">
-    <a asp-controller="Dashboard" asp-action="Admin" class="btn btn-outline-secondary me-2">Dashboard</a>
-    <a asp-controller="AdminManagement" asp-action="Users" class="btn btn-outline-primary me-2">Manage Users</a>
-    <a asp-controller="AdminApproval" asp-action="Index" class="btn btn-outline-primary me-2">Manage Properties</a>
-    <a asp-controller="AdminApproval" asp-action="Index" asp-route-filter="Pending" class="btn btn-outline-warning me-2">Pending Approvals</a>
-    <a asp-controller="AdminApproval" asp-action="Index" asp-route-filter="Approved" class="btn btn-outline-success me-2">Approved Properties</a>
-    <a asp-controller="AdminApproval" asp-action="Index" asp-route-filter="Rejected" class="btn btn-outline-danger">Rejected Properties</a>
+<div class="admin-navigation">
+    <a asp-controller="Dashboard"
+       asp-action="Admin"
+       class="btn btn-outline-primary">
+        Dashboard
+    </a>
+
+    <a asp-controller="AdminManagement"
+       asp-action="Users"
+       class="btn btn-outline-primary">
+        Manage Users
+    </a>
+
+    <a asp-controller="AdminApproval"
+       asp-action="Index"
+       class="btn btn-outline-primary">
+        Manage Properties
+    </a>
+
+    <a asp-controller="AdminApproval"
+       asp-action="Index"
+       asp-route-filter="Pending"
+       class="btn btn-outline-warning">
+        Pending Approvals
+    </a>
+
+    <a asp-controller="AdminApproval"
+       asp-action="Index"
+       asp-route-filter="Approved"
+       class="btn btn-outline-success">
+        Approved Properties
+    </a>
+
+    <a asp-controller="AdminApproval"
+       asp-action="Index"
+       asp-route-filter="Rejected"
+       class="btn btn-outline-danger">
+        Rejected Properties
+    </a>
 </div>
+
+<style>
+    .admin-navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 16px;
+        margin-bottom: 24px;
+        background: #ffffff;
+        border: 1px solid #e2eaf5;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(28, 55, 90, 0.04);
+    }
+
+    .admin-navigation .btn {
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+</style>
