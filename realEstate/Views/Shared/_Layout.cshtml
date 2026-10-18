@@ -18,7 +18,6 @@
             <div class="container-fluid">
 
                 <a class="navbar-brand"
-                   asp-area=""
                    asp-controller="Home"
                    asp-action="Index">
                     realEstate
@@ -39,7 +38,6 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark"
-                               asp-area=""
                                asp-controller="Home"
                                asp-action="Index">
                                 Home
@@ -48,7 +46,6 @@
 
                         <li class="nav-item">
                             <a class="nav-link text-dark"
-                               asp-area=""
                                asp-controller="Home"
                                asp-action="Privacy">
                                 Privacy
@@ -60,9 +57,17 @@
 
                         @if (User?.Identity?.IsAuthenticated ?? false)
                         {
-                            @* Buyer links *@
-                            @if (User.IsInRole("Buyer") && !User.IsInRole("Seller"))
+                            @* Buyer navigation *@
+                            @if (User.IsInRole("Buyer"))
                             {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Dashboard"
+                                       asp-action="Buyer">
+                                        Dashboard
+                                    </a>
+                                </li>
+
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
                                        asp-controller="Favorites"
@@ -88,7 +93,7 @@
                                 </li>
                             }
 
-                            @* Seller links *@
+                            @* Seller navigation *@
                             @if (User.IsInRole("Seller"))
                             {
                                 <li class="nav-item">
@@ -132,15 +137,14 @@
                                 </li>
                             }
 
-                            @* Admin links *@
+                            @* Admin navigation *@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"
-                                       asp-area=""
                                        asp-controller="Dashboard"
                                        asp-action="Admin">
-                                        Admin
+                                        Dashboard
                                     </a>
                                 </li>
                             }
@@ -156,7 +160,6 @@
                                             class="btn btn-link nav-link">
                                         Logout
                                     </button>
-
                                 </form>
                             </li>
                         }
@@ -206,11 +209,7 @@
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2026 - realEstate -
-            <a asp-area=""
-               asp-controller="Home"
-               asp-action="Privacy">
-                Privacy
-            </a>
+            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 

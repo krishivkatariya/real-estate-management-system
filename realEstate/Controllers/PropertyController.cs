@@ -18,7 +18,13 @@ public class PropertyController : Controller
     private readonly IFavoriteRepository _favoriteRepo;
     private readonly IRentalTransactionRepository _rentalRepo;
 
-    public PropertyController(IPropertyRepository repo, ApplicationDbContext db, IImageService imageService, UserManager<ApplicationUser> userManager, IFavoriteRepository favoriteRepo, IRentalTransactionRepository rentalRepo)
+    public PropertyController(
+        IPropertyRepository repo,
+        ApplicationDbContext db,
+        IImageService imageService,
+        UserManager<ApplicationUser> userManager,
+        IFavoriteRepository favoriteRepo,
+        IRentalTransactionRepository rentalRepo)
     {
         _repo = repo;
         _db = db;
@@ -32,7 +38,9 @@ public class PropertyController : Controller
     public async Task<IActionResult> MyProperties()
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user == null) return Challenge();
+
+        if (user == null)
+            return Challenge();
 
         var list = await _db.Properties
             .Where(p => p.OwnerId == user.Id)
@@ -43,7 +51,8 @@ public class PropertyController : Controller
         return View(list);
     }
 
-    // Public listing with search, filters, sort and pagination
+    // Public listing: guests can browse approved properties.
+    [AllowAnonymous]
     public async Task<IActionResult> Index(
         string? search,
         string? city,
@@ -61,78 +70,97 @@ public class PropertyController : Controller
 
         var query = _repo.Query();
 
-        // Only show approved properties in public listings
-        query = query.Where(p => p.ApprovalStatus == ApprovalStatus.Approved);
+        // Only show approved properties in public listings.
+        query = query.Where(p =>
+            p.ApprovalStatus == ApprovalStatus.Approved);
 
-        // Keyword search
         if (!string.IsNullOrWhiteSpace(search))
         {
             var kw = search.Trim().ToLower();
-            query = query.Where(p => (p.Title != null && p.Title.ToLower().Contains(kw))
-                                  || (p.Description != null && p.Description.ToLower().Contains(kw))
-                                  || (p.Address != null && p.Address.ToLower().Contains(kw))
-                                  || (p.City != null && p.City.ToLower().Contains(kw)));
+
+            query = query.Where(p =>
+                (p.Title != null && p.Title.ToLower().Contains(kw)) ||
+                (p.Description != null && p.Description.ToLower().Contains(kw)) ||
+                (p.Address != null && p.Address.ToLower().Contains(kw)) ||
+                (p.City != null && p.City.ToLower().Contains(kw)));
         }
 
         if (!string.IsNullOrWhiteSpace(city))
         {
             var c = city.Trim().ToLower();
-            query = query.Where(p => p.City != null && p.City.ToLower().Contains(c));
+
+            query = query.Where(p =>
+                p.City != null && p.City.ToLower().Contains(c));
         }
 
         if (propertyType.HasValue)
         {
-            query = query.Where(p => p.PropertyType == propertyType.Value);
+            query = query.Where(p =>
+                p.PropertyType == propertyType.Value);
         }
 
         if (listingPurpose.HasValue)
         {
-            query = query.Where(p => p.ListingPurpose == listingPurpose.Value);
+            query = query.Where(p =>
+                p.ListingPurpose == listingPurpose.Value);
         }
 
         if (minPrice.HasValue)
         {
-            query = query.Where(p => p.Price >= minPrice.Value);
+            query = query.Where(p =>
+                p.Price >= minPrice.Value);
         }
 
         if (maxPrice.HasValue)
         {
-            query = query.Where(p => p.Price <= maxPrice.Value);
+            query = query.Where(p =>
+                p.Price <= maxPrice.Value);
         }
 
         if (bedrooms.HasValue)
         {
-            query = query.Where(p => p.Bedrooms >= bedrooms.Value);
+            query = query.Where(p =>
+                p.Bedrooms >= bedrooms.Value);
         }
 
         if (minArea.HasValue)
         {
-            query = query.Where(p => p.Area >= minArea.Value);
+            query = query.Where(p =>
+                p.Area >= minArea.Value);
         }
 
         if (maxArea.HasValue)
         {
-            query = query.Where(p => p.Area <= maxArea.Value);
+            query = query.Where(p =>
+                p.Area <= maxArea.Value);
         }
 
-        // Sorting
         query = sort switch
         {
             "price_asc" => query.OrderBy(p => p.Price),
             "price_desc" => query.OrderByDescending(p => p.Price),
             "oldest" => query.OrderBy(p => p.CreatedAt),
-            _ => query.OrderByDescending(p => p.CreatedAt), // newest default
+            _ => query.OrderByDescending(p => p.CreatedAt)
         };
 
-        // Pagination: validate page
-        if (page < 1) page = 1;
+        if (page < 1)
+            page = 1;
 
         var totalItems = await query.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-        if (totalPages == 0) totalPages = 1;
-        if (page > totalPages) page = totalPages;
 
-        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        var totalPages =
+            (int)Math.Ceiling(totalItems / (double)pageSize);
+
+        if (totalPages == 0)
+            totalPages = 1;
+
+        if (page > totalPages)
+            page = totalPages;
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
         var vm = new realEstate.Models.ViewModels.PropertyListViewModel
         {
@@ -153,32 +181,60 @@ public class PropertyController : Controller
             Sort = sort
         };
 
-        // include favorites for current user
         if (User?.Identity?.IsAuthenticated ?? false)
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user != null)
             {
-                vm.FavoritedPropertyIds = await _favoriteRepo.GetFavoritePropertyIdsForUserAsync(user.Id);
+                vm.FavoritedPropertyIds =
+                    await _favoriteRepo
+                        .GetFavoritePropertyIdsForUserAsync(user.Id);
             }
         }
 
         return View(vm);
     }
 
+    // Guests are redirected to Login when they click Details.
+    [AllowAnonymous]
     public async Task<IActionResult> Details(int id)
     {
+        if (!(User?.Identity?.IsAuthenticated ?? false))
+        {
+            var returnUrl = Url.Action(
+                "Details",
+                "Property",
+                new { id });
+
+            return RedirectToAction(
+                "Login",
+                "Account",
+                new { returnUrl });
+        }
+
         var property = await _repo.GetByIdAsync(id);
-        if (property == null) return NotFound();
-        // Restrict access to non-approved listings unless owner or admin
+
+        if (property == null)
+            return NotFound();
+
         var user = await _userManager.GetUserAsync(User);
-        var isOwner = user != null && property.OwnerId == user.Id;
-        if (property.ApprovalStatus != ApprovalStatus.Approved && !isOwner && !User.IsInRole("Admin"))
+
+        var isOwner =
+            user != null && property.OwnerId == user.Id;
+
+        // Hide unapproved properties from other users.
+        if (property.ApprovalStatus != ApprovalStatus.Approved
+            && !isOwner
+            && !User.IsInRole("Admin"))
         {
             return NotFound();
         }
-        ViewData["HasOpenRentalRequest"] = user != null
-            && await _rentalRepo.HasOpenRequestAsync(user.Id, id);
+
+        ViewData["HasOpenRentalRequest"] =
+            user != null &&
+            await _rentalRepo.HasOpenRequestAsync(user.Id, id);
+
         return View(property);
     }
 
@@ -191,23 +247,33 @@ public class PropertyController : Controller
     [HttpPost]
     [Authorize(Roles = "Admin,Seller")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Property model, List<IFormFile>? images)
+    public async Task<IActionResult> Create(
+        Property model,
+        List<IFormFile>? images)
     {
         if (!Enum.IsDefined(model.ListingPurpose))
         {
-            ModelState.AddModelError(nameof(Property.ListingPurpose), "Select a valid listing purpose.");
+            ModelState.AddModelError(
+                nameof(Property.ListingPurpose),
+                "Select a valid listing purpose.");
         }
-        if (model.ListingPurpose == ListingPurpose.Rent && model.Price <= 0)
+
+        if (model.ListingPurpose == ListingPurpose.Rent &&
+            model.Price <= 0)
         {
-            ModelState.AddModelError(nameof(Property.Price), "Monthly rent must be greater than zero.");
+            ModelState.AddModelError(
+                nameof(Property.Price),
+                "Monthly rent must be greater than zero.");
         }
-        if (!ModelState.IsValid) return View(model);
+
+        if (!ModelState.IsValid)
+            return View(model);
 
         var user = await _userManager.GetUserAsync(User);
+
         model.OwnerId = user?.Id;
         model.CreatedAt = DateTime.UtcNow;
         model.Status = PropertyStatus.Available;
-        // mark new submissions as pending approval and record submission time
         model.ApprovalStatus = ApprovalStatus.Pending;
         model.SubmittedAt = DateTime.UtcNow;
 
@@ -220,25 +286,20 @@ public class PropertyController : Controller
             {
                 try
                 {
-                    await _imageService.SavePropertyImageAsync(file, model.Id);
+                    await _imageService.SavePropertyImageAsync(
+                        file,
+                        model.Id);
                 }
                 catch
                 {
-                    // ignore individual image errors
+                    // Preserve existing behavior for image errors.
                 }
             }
         }
 
-        TempData["SuccessMessage"] = "Property submitted for approval.";
+        TempData["SuccessMessage"] =
+            "Property submitted for approval.";
 
-
-        // After creating a property, sellers should be redirected to their dashboard
-        if (User.IsInRole("Seller"))
-        {
-            return RedirectToAction("Dashboard", "Seller");
-        }
-
-        // Admins redirected to seller dashboard as well for consistency
         return RedirectToAction("Dashboard", "Seller");
     }
 
@@ -246,9 +307,12 @@ public class PropertyController : Controller
     public async Task<IActionResult> Edit(int id)
     {
         var property = await _repo.GetByIdAsync(id);
-        if (property == null) return NotFound();
 
-        if (!await CanEditAsync(property)) return Forbid();
+        if (property == null)
+            return NotFound();
+
+        if (!await CanEditAsync(property))
+            return Forbid();
 
         return View(property);
     }
@@ -256,49 +320,83 @@ public class PropertyController : Controller
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Property model, List<IFormFile>? images)
+    public async Task<IActionResult> Edit(
+        int id,
+        Property model,
+        List<IFormFile>? images)
     {
-        if (id != model.Id) return BadRequest();
+        if (id != model.Id)
+            return BadRequest();
+
         if (!Enum.IsDefined(model.ListingPurpose))
         {
-            ModelState.AddModelError(nameof(Property.ListingPurpose), "Select a valid listing purpose.");
+            ModelState.AddModelError(
+                nameof(Property.ListingPurpose),
+                "Select a valid listing purpose.");
         }
-        if (model.ListingPurpose == ListingPurpose.Rent && model.Price <= 0)
+
+        if (model.ListingPurpose == ListingPurpose.Rent &&
+            model.Price <= 0)
         {
-            ModelState.AddModelError(nameof(Property.Price), "Monthly rent must be greater than zero.");
+            ModelState.AddModelError(
+                nameof(Property.Price),
+                "Monthly rent must be greater than zero.");
         }
-        if (!ModelState.IsValid) return View(model);
+
+        if (!ModelState.IsValid)
+            return View(model);
 
         var property = await _repo.GetByIdAsync(id);
-        if (property == null) return NotFound();
-        if (!await CanEditAsync(property)) return Forbid();
 
-        if (!Enum.IsDefined(model.ListingPurpose) || !Enum.IsDefined(model.Status)) return BadRequest();
-        if (model.Status == PropertyStatus.Rented && property.Status != PropertyStatus.Rented)
+        if (property == null)
+            return NotFound();
+
+        if (!await CanEditAsync(property))
+            return Forbid();
+
+        if (!Enum.IsDefined(model.ListingPurpose) ||
+            !Enum.IsDefined(model.Status))
         {
-            return BadRequest("A property can only become Rented when an approved rental is activated.");
+            return BadRequest();
         }
-        if (property.Status == PropertyStatus.Rented && model.Status != PropertyStatus.Rented)
+
+        if (model.Status == PropertyStatus.Rented &&
+            property.Status != PropertyStatus.Rented)
         {
-            return BadRequest("Complete or cancel the active rental before changing the property status.");
+            return BadRequest(
+                "A property can only become Rented when an approved rental is activated.");
+        }
+
+        if (property.Status == PropertyStatus.Rented &&
+            model.Status != PropertyStatus.Rented)
+        {
+            return BadRequest(
+                "Complete or cancel the active rental before changing the property status.");
         }
 
         if (model.ListingPurpose != property.ListingPurpose)
         {
-            var hasAcceptedPurchase = await _db.PurchaseRequests.AnyAsync(request =>
-                request.PropertyId == property.Id && request.Status == PurchaseRequestStatus.Accepted);
-            var hasApprovedOrActiveRental = await _db.RentalTransactions.AnyAsync(rental =>
-                rental.PropertyId == property.Id
-                && (rental.Status == RentalStatus.Approved || rental.Status == RentalStatus.Active));
+            var hasAcceptedPurchase =
+                await _db.PurchaseRequests.AnyAsync(request =>
+                    request.PropertyId == property.Id &&
+                    request.Status == PurchaseRequestStatus.Accepted);
 
-            if (property.Status == PropertyStatus.Sold || property.Status == PropertyStatus.Rented
-                || hasAcceptedPurchase || hasApprovedOrActiveRental)
+            var hasApprovedOrActiveRental =
+                await _db.RentalTransactions.AnyAsync(rental =>
+                    rental.PropertyId == property.Id &&
+                    (rental.Status == RentalStatus.Approved ||
+                     rental.Status == RentalStatus.Active));
+
+            if (property.Status == PropertyStatus.Sold ||
+                property.Status == PropertyStatus.Rented ||
+                hasAcceptedPurchase ||
+                hasApprovedOrActiveRental)
             {
-                return BadRequest("The listing purpose cannot change while a sale or rental is active or completed.");
+                return BadRequest(
+                    "The listing purpose cannot change while a sale or rental is active or completed.");
             }
         }
 
-        // update allowed fields
         property.Title = model.Title;
         property.Description = model.Description;
         property.Price = model.Price;
@@ -323,24 +421,33 @@ public class PropertyController : Controller
             {
                 try
                 {
-                    await _imageService.SavePropertyImageAsync(file, property.Id);
+                    await _imageService.SavePropertyImageAsync(
+                        file,
+                        property.Id);
                 }
                 catch
                 {
-                    // ignore
+                    // Preserve existing behavior for image errors.
                 }
             }
         }
 
-        return RedirectToAction(nameof(Details), new { id = property.Id });
+        return RedirectToAction(
+            nameof(Details),
+            new { id = property.Id });
     }
 
     [Authorize]
     public async Task<IActionResult> Delete(int id)
     {
         var property = await _repo.GetByIdAsync(id);
-        if (property == null) return NotFound();
-        if (!await CanEditAsync(property)) return Forbid();
+
+        if (property == null)
+            return NotFound();
+
+        if (!await CanEditAsync(property))
+            return Forbid();
+
         return View(property);
     }
 
@@ -350,26 +457,45 @@ public class PropertyController : Controller
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var property = await _repo.GetByIdAsync(id);
-        if (property == null) return NotFound();
-        if (!await CanEditAsync(property)) return Forbid();
 
-        // delete images files
+        if (property == null)
+            return NotFound();
+
+        if (!await CanEditAsync(property))
+            return Forbid();
+
         foreach (var img in property.Images.ToList())
         {
             await _imageService.DeletePropertyImageAsync(img);
         }
 
+        // Existing related booking requests must be handled
+        // according to the project's foreign-key relationships.
+        var bookingRequests = await _db.BookingRequests
+            .Where(b => b.PropertyId == id)
+            .ToListAsync();
+
+        if (bookingRequests.Count > 0)
+        {
+            _db.BookingRequests.RemoveRange(bookingRequests);
+        }
+
         await _repo.DeleteAsync(property);
         await _repo.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(MyProperties));
     }
 
     private async Task<bool> CanEditAsync(Property property)
     {
-        if (User.IsInRole("Admin")) return true;
+        if (User.IsInRole("Admin"))
+            return true;
+
         var user = await _userManager.GetUserAsync(User);
-        if (user == null) return false;
+
+        if (user == null)
+            return false;
+
         return property.OwnerId == user.Id;
     }
 }
